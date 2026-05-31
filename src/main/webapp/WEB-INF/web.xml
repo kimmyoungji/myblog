@@ -1,0 +1,28 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  
+  	<!-- Spring MVC의 핵심 Servlet 등록 -->
+	<servlet>
+	    <servlet-name>appServlet</servlet-name>
+	    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	
+	    <!-- DispatcherServlet이 읽을 Spring MVC 설정 파일 위치 -->
+	    <init-param>
+	        <param-name>contextConfigLocation</param-name>
+	        <param-value>/WEB-INF/spring/servlet-context.xml</param-value>
+	    </init-param>
+	
+	    <!-- Tomcat 시작 시 Servlet을 미리 생성 -->
+	    <load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<!-- 모든 요청을 DispatcherServlet으로 보냄 -->
+	<servlet-mapping>
+	    <servlet-name>appServlet</servlet-name>
+	    <url-pattern>/</url-pattern>
+	</servlet-mapping>
+</web-app>

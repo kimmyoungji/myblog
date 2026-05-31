@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xmlns:task="http://www.springframework.org/schema/task"
+        xmlns:websocket="http://www.springframework.org/schema/websocket"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+                http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+                http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
+                http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.0.xsd">
+
+    <!-- @Controller, @Service, @Component 등을 스캔 -->
+    <context:component-scan base-package="blog" />
+
+    <!-- @RequestMapping, @ResponseBody 등 Spring MVC 기본 기능 활성화 -->
+    <mvc:annotation-driven />
+
+    <!-- /resources/** 요청은 정적 리소스로 처리 -->
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+
+    <!-- Controller가 반환한 view 이름을 JSP 경로로 변환 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+</beans>
