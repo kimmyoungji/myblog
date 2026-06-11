@@ -1,28 +1,38 @@
-<!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
-
-<web-app>
-  <display-name>Archetype Created Web Application</display-name>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+           http://xmlns.jcp.org/xml/ns/javaee
+           http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+         
+  	<display-name>KMJ Blog</display-name>
   
-  	<!-- Spring MVC의 핵심 Servlet 등록 -->
+  	<!-- 1. properties 파일 읽기 -->
+    <!-- <context:property-placeholder location="classpath:application.properties" /> -->
+    
+    <!-- 2. Root ApplicationContext 설정 -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/spring/root-context.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> <!-- root-context.xml을 읽어서 Root ApplicationContext 생성 -->
+    </listener>
+  	
+  	<!-- 3. Spring MVC의 핵심 Servlet 등록 -->
 	<servlet>
 	    <servlet-name>appServlet</servlet-name>
 	    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-	
-	    <!-- DispatcherServlet이 읽을 Spring MVC 설정 파일 위치 -->
 	    <init-param>
 	        <param-name>contextConfigLocation</param-name>
-	        <param-value>/WEB-INF/spring/servlet-context.xml</param-value>
+	        <param-value>/WEB-INF/spring/servlet-context.xml</param-value> <!-- DispatcherServlet이 읽을 Spring MVC 설정 파일 위치 -->
 	    </init-param>
-	
-	    <!-- Tomcat 시작 시 Servlet을 미리 생성 -->
-	    <load-on-startup>1</load-on-startup>
+	    <load-on-startup>1</load-on-startup> <!-- Tomcat 시작 시 Servlet을 미리 생성 -->
 	</servlet>
 	
-	<!-- 모든 요청을 DispatcherServlet으로 보냄 -->
+	<!-- 4. 모든 요청을 DispatcherServlet으로 보냄 -->
 	<servlet-mapping>
-	    <servlet-name>appServlet</servlet-name>
+		<servlet-name>appServlet</servlet-name>
 	    <url-pattern>/</url-pattern>
 	</servlet-mapping>
 </web-app>

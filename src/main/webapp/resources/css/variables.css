@@ -1,0 +1,19 @@
+:root {
+  --color-primary: #f47b55;
+  --color-border: #d9dee7;
+  --color-text: #222;
+  --color-muted: #8b95a1;
+  --color-bg: #fff;
+  --color-active: #ffe9e2;
+
+  --header-height: 64px;
+  --sidebar-width: 260px;
+  --footer-height: 64px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+}
