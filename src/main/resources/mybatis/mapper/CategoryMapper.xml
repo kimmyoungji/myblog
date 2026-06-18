@@ -6,8 +6,16 @@
 
 <mapper namespace="kmjblog.mapper.CategoryMapper">
 
-    <select id="selectCategoryList">
-        select * from categories;
+    <select id="selectCategoryList" resultType="kmjblog.domain.Category" >
+        SELECT   CATEGORY_ID 		<!-- 카테고리아이디 -->
+        		,PARENT_CATEGORY_ID <!-- 부모 카테고리아이디 -->
+        		,NAME 				<!-- 카테고리명 -->
+        		,SORT_ORDER			<!-- 정렬순서 -->
+        		,CREATED_AT 		<!-- 생성일 -->
+        		,UPDATED_AT	 		<!-- 수정일 -->
+          FROM  CATEGORIES 			<!-- 카테고리 테이블 -->
+         ORDER  BY CATEGORY_ID ASC, PARENT_CATEGORY_ID ASC
     </select>
 
 </mapper>
+

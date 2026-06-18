@@ -1,16 +1,17 @@
 package kmjblog.web;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import kmjblog.domain.Category;
 import kmjblog.service.CategoryService;
 
 @Controller
+@RequestMapping("/blog")
 public class BlogController {
 	
 	private final CategoryService categoryService;
@@ -19,12 +20,14 @@ public class BlogController {
 		this.categoryService = categoryService;
 	}
 	
-	@GetMapping("/blog")
+	@GetMapping("/")
 	public String getBlog(Model modelMap) {
 		
-		List<Map<String, Object>> categoryList = categoryService.selectCategoryList();
+		List<Category> categoryTree = categoryService.buildCategoryTree();
 		
-		modelMap.addAttribute("categoryList", categoryList);
+		modelMap.addAttribute("categoryTree", categoryTree);
+		
+		System.out.println(categoryTree.toString());
 		
 		return "blog";
 	}

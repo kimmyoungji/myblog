@@ -1,12 +1,13 @@
 package kmjblog.mapper;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+
+import kmjblog.domain.Category;
 
 @Mapper
 public interface CategoryMapper {
 	/* 카테고리 목록조회*/
-	public List<Map<String, Object>> selectCategoryList();
+	public List<Category> selectCategoryList();
 }
