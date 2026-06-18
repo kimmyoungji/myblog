@@ -1,21 +1,17 @@
 
 /* ================ nav 영역 css ================ */
-.layout__nav .category-tree {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 14px;
-  line-height: 2;
+.category-nav {
+	width: 100%;
+	padding: 2rem;
 }
-.layout__nav .category-tree li {
-  padding: 2px 8px;
+
+.category-tree {
+	margin-left: 1rem;	
 }
-.layout__nav .category-tree .active {
-  background: var(--color-active);
+
+.category-children {
+	margin-left: 1rem;
 }
-.layout__nav .category-tree .depth-1 { padding-left: 18px !important; }
-.layout__nav .category-tree .depth-2 { padding-left: 36px !important; }
-.layout__nav .category-tree .depth-3 { padding-left: 54px !important; }
 
 
 /* ================ main 영역 css ================ */

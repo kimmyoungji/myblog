@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans
-           https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/beans/spring-beans.xsd
            http://www.springframework.org/schema/context
-           https://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/context/spring-context.xsd
            http://mybatis.org/schema/mybatis-spring
-		   https://mybatis.org/schema/mybatis-spring.xsd">
-
+           http://mybatis.org/schema/mybatis-spring.xsd">
+           
     <!-- 1) DB접속 정보 읽기 -->
     <context:property-placeholder location="classpath:properties/db.properties" />
     
@@ -33,10 +33,11 @@
 	<!-- 4) mybatis sqlSessionFactoryBean 설정 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 	    <property name="dataSource" ref="dataSource" />
-	    <property name="mapperLocations" value="classpath:mybatis/mapper/*Mapper.xml" />
+	    <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+	    <property name="mapperLocations" value="classpath*:mybatis/mapper/*Mapper.xml" />
 	</bean>
 	
 	<!-- 5) mybatis mapper 구현체 생성 -->
-	<mybatis-spring:scan base-package="kmjblog.mapper" />
+	<mybatis:scan base-package="kmjblog.mapper" />
 
 </beans>
