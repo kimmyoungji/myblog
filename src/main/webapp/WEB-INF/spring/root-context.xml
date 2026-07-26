@@ -17,10 +17,14 @@
     
     <!-- 2) Service, Repository 같은 공통 Bean 스캔 -->
     <context:component-scan base-package="kmjblog">
-        <!-- Controller는 servlet-context.xml에서 관리할 것이므로 제외 -->
-        <context:exclude-filter type="annotation"
-                                expression="org.springframework.stereotype.Controller" />
-    </context:component-scan>
+	    <context:exclude-filter 
+	        type="annotation"
+	        expression="org.springframework.stereotype.Controller" />
+	
+	    <context:exclude-filter 
+	        type="annotation"
+	        expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+	</context:component-scan>
     
 	<!-- 3) DB 연결 정보로 datasource 설정 -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">

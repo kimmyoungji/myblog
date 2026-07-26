@@ -4,27 +4,31 @@
 <section class="layout__main">
 	<div class="post-meta">
 		<p>
-			<strong>제목:</strong> posts.title
+			<label for="post-title">제목:</label> 
+			<input id="post-title" value="${frstPost.title}" disabled/>
 		</p>
 		<p>
-			<strong>최종작성일:</strong> 2026년 05월 13일 (수) 오후 10:32
+			<label for="post-updatedAt">최종작성일:</label>
+			<input id="post-updatedAt" value="${frstPost.updatedAt}" disabled/>
 		</p>
 		<p>
-			<strong>작성자:</strong> posts.author_id.user_email
+			<label for="post-authorId">작성자:</label> 
+			<input id="post-authorId" value="${frstPost.authorId}" disabled/>
 		</p>
 		<p>
-			<strong>조회수:</strong> 0
+			<label for="post-viewCount">조회수:</label>
+			<input id="post-viewCount" value="${frstPost.viewCount}" disabled/>
 		</p>
 	</div>
 
-	<article class="post-box">
-		<h2># Hello My blog</h2>
-		<h3>## Index</h3>
-		<ol>
-			<li>history</li>
-			<li>project</li>
-			<li>study</li>
-		</ol>
+	<article>
+		<textarea id="post-content"
+				  rows="6"
+				  cols="22"
+				  minlength="10"
+				  maxlength="20"
+				  disabled
+				  placeholder="띵거가 말하지 못한 것들...">${frstPost.content}</textarea>
 	</article>
 
 	<section class="comments">

@@ -7,7 +7,81 @@
 <mapper namespace="kmjblog.mapper.PostMapper">
 
     <select id="selectPostList">
-        select * from posts;
+        SELECT  POST_ID 
+        		,CATEGORY_ID
+        		,PARENT_POST_ID
+        		,SORT_SEQ
+        		,AUTHOR_ID
+        		,FILE_GROUP_ID
+        		,TITLE
+        		/* ,CONTENT */
+        		,VIEW_COUNT 
+        		,DEL_YN
+        		,CREATED_AT
+        		,UPDATED_AT
+		  FROM  POSTS
+		 WHERE  DEL_YN = 'N'
+		 ORDER  BY CATEGORY_ID ASC, SORT_SEQ ASC
     </select>
+    
+    <select id="selectPost" parameterType="java.lang.Long" resultType="kmjblog.domain.Post">
+    	SELECT * FROM POSTS WHERE POST_ID = #{postId} AND DEL_YN = 'N'
+    </select>
+    
+    <insert id="insertPost" parameterType="kmjblog.domain.Post" useGeneratedKeys="true" keyProperty="postId">
+    	INSERT INTO POSTS
+    	(
+       		 CATEGORY_ID
+       		,PARENT_POST_ID
+       		,SORT_SEQ
+       		,AUTHOR_ID
+       		,FILE_GROUP_ID
+       		,TITLE
+       		,CONTENT
+       		,VIEW_COUNT
+       		,DEL_YN
+       		,CREATED_AT
+       		,UPDATED_AT
+    	)VALUES
+    	(
+    		 #{categoryId}
+    		,#{parentPostId}
+    		,#{sortSeq}
+    		,#{authorId}
+    		,#{fileGroupId}
+    		,#{title}
+    		,#{content}
+    		,0
+    		,'N'
+    		,NOW()
+    		,NOW()
+    	)
+    </insert>
 
+    <update id="updatePost" parameterType="kmjblog.domain.Post">
+    	UPDATE POSTS
+    	<set>
+    		<if test="parentPostId != null">PARENT_POST_ID 	= #{parentPostId}, 	</if>
+    		<if test="sortSeq != null">		SORT_SEQ 		= #{sortSeq},	   	</if>
+    		<if test="fileGroupId != null">	FILE_GROUP_ID 	= #{fileGroupId},	</if>
+    		<if test="title != null">		TITLE      		= #{title},			</if>
+    		<if test="content != null">		CONTENT    		= #{content},		</if>
+    										DEL_YN     		= 'N'
+    										UPDATED_AT 		= NOW()
+    	</set>
+    	 WHERE  POST_ID = #{postId}
+    </update>
+
+    <update id="renamePost" parameterType="kmjblog.domain.Post">
+    	UPDATE POSTS
+    	   SET  TITLE      = #{title}
+       			,UPDATED_AT = NOW()
+    	 WHERE  POST_ID    = #{postId}
+    </update>
+
+    <delete id="deletePost" parameterType="java.lang.Long">
+    	DELETE
+    	  FROM  POSTS
+    	 WHERE  POST_ID = #{postId}
+    </delete>
 </mapper>

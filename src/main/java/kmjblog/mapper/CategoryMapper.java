@@ -8,6 +8,9 @@ import kmjblog.domain.Category;
 
 @Mapper
 public interface CategoryMapper {
-	/* 카테고리 목록조회*/
 	public List<Category> selectCategoryList();
+	public int insertCategory(Category category);
+	public int updateCategory(Category category);
+	public int renameCategory(Category category);
+	public int deleteCategory(Long categoryId);
 }
