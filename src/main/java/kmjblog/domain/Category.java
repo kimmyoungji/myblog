@@ -13,11 +13,12 @@ public class Category {
 	private Long categoryId;
 	private Long parentCategoryId;
 	private String name;
-	private int sortOrder;
+	private int sortSeq;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private List<Category> children = new ArrayList<Category>();
-	
+	private List<Post> posts = new ArrayList<Post>();
+
 	/* 생성자 */
 	public Category () {}
 	
@@ -46,12 +47,12 @@ public class Category {
 		this.name = name;
 	}
 
-	public int getSortOrder() {
-		return sortOrder;
+	public int getSortSeq() {
+		return sortSeq;
 	}
 
-	public void setSortOrder(int sortOrder) {
-		this.sortOrder = sortOrder;
+	public void setSortSeq(int sortSeq) {
+		this.sortSeq = sortSeq;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -78,16 +79,19 @@ public class Category {
 		this.children = children;
 	}
 	
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
+
 	@Override
 	public String toString() {
-		return "Category{" +
-				"categoryId=" + categoryId +
-				", parentCategoryId=" + parentCategoryId +
-				", name='" + name + '\'' +
-				", sortOrder=" + sortOrder +
-				", createdAt=" + createdAt +
-				", updatedAt=" + updatedAt +
-				", children=" + children +
-				'}';
+		return "Category [categoryId=" + categoryId + ", parentCategoryId=" + parentCategoryId + ", name=" + name
+				+ ", sortSeq=" + sortSeq + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", children="
+				+ children + ", posts=" + posts + "]";
 	}
+	
 }

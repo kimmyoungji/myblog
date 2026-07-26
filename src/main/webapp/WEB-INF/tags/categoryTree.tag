@@ -5,17 +5,24 @@
 
 <li class="category-item">
 
-    <c:url var="categoryUrl" value="/blog/category/${category.categoryId}" />
-    
+    <!-- <c:url var="categoryUrl" value="/blog/category/${category.categoryId}" /> 
     <a href="${categoryUrl}">
         <c:out value="${category.name}" />
-    </a>
+    </a> -->
     
-    <c:if test="${not empty category.children}">
+    <c:out value="${category.name}" />
+    
+    <c:if test="${not empty category.children or not empty category.posts}">
         <ul class="category-children">
+            
+            <c:forEach var="post" items="${category.posts}">
+                <app:postTree post="${post}" />
+            </c:forEach> 
+            
             <c:forEach var="child" items="${category.children}">
                 <app:categoryTree category="${child}" />
-            </c:forEach>
+            </c:forEach> 
+            
         </ul>
     </c:if>
 
