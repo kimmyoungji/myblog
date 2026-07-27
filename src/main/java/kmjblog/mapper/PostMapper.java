@@ -13,8 +13,8 @@ public interface PostMapper {
 	public Post selectPost(Long postId);
 	public int insertPost(Post post);
 	public int updatePost(Post post);
-	public int renamePost(Post post);
-	public int relocatePost(Post post);
+	public int updatePostTitle(Post post);
+	public int updatePostPosition(Post post);
 	public List<Post> selectSiblingPosts(@Param("parentPostId") Long parentPostId, @Param("categoryId") Long categoryId);
 	public int updatePostSortSeq(@Param("postId") Long postId, @Param("sortSeq") int sortSeq);
 	public int deletePost(Long postId);

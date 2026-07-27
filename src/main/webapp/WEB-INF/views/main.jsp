@@ -2,34 +2,34 @@
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <section class="layout__main">
-	<div class="post-meta">
-		<p>
-			<label for="post-title">제목:</label> 
-			<input id="post-title" value="${frstPost.title}" disabled/>
-		</p>
-		<p>
-			<label for="post-updatedAt">최종작성일:</label>
-			<input id="post-updatedAt" value="${frstPost.updatedAt}" disabled/>
-		</p>
-		<p>
-			<label for="post-authorId">작성자:</label> 
-			<input id="post-authorId" value="${frstPost.authorId}" disabled/>
-		</p>
-		<p>
-			<label for="post-viewCount">조회수:</label>
-			<input id="post-viewCount" value="${frstPost.viewCount}" disabled/>
-		</p>
-	</div>
+	<div id="post-panel" class="post-panel"
+		 data-mode="${empty frstPost ? 'initial' : 'view'}"
+		 data-post-id="${frstPost.postId}">
 
-	<article>
-		<textarea id="post-content"
-				  rows="6"
-				  cols="22"
-				  minlength="10"
-				  maxlength="20"
-				  disabled
-				  placeholder="띵거가 말하지 못한 것들...">${frstPost.content}</textarea>
-	</article>
+		<p class="post-empty">왼쪽 트리에서 게시글을 선택해주세요.</p>
+
+		<div class="post-meta">
+			<input id="post-title" class="post-title" value="${frstPost.title}" disabled/>
+			<p class="post-meta-line">
+				작성자: <span id="post-authorId">${frstPost.authorId}</span>
+				/ 최종작성일: <span id="post-updatedAt">${frstPost.updatedAt}</span>
+				/ 조회수: <span id="post-viewCount">${frstPost.viewCount}</span>
+			</p>
+		</div>
+
+		<article class="post-box">
+			<textarea id="post-content"
+					  disabled
+					  placeholder="띵거가 말하지 못한 것들...">${frstPost.content}</textarea>
+
+			<div class="post-toolbar">
+				<button type="button" class="btn btn-text" data-action="delete">삭제</button>
+				<button type="button" class="btn btn-text" data-action="cancel">취소</button>
+				<button type="button" class="btn btn-primary" data-action="edit">수정</button>
+				<button type="button" class="btn btn-primary" data-action="save">저장</button>
+			</div>
+		</article>
+	</div>
 
 	<section class="comments">
 		<h3>댓글</h3>

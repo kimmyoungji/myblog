@@ -24,12 +24,49 @@
 
 
 /* ================ main 영역 css ================ */
-.layout__main .post-meta p {
-  margin: 0 0 8px;
+.post-empty {
+  display: none;
+  padding: 64px 0;
+  text-align: center;
+  color: var(--color-muted);
   font-size: 15px;
 }
 
-.layout__main .post-box {
+.post-panel[data-mode="initial"] .post-empty {
+  display: block;
+}
+
+.post-panel[data-mode="initial"] .post-meta,
+.post-panel[data-mode="initial"] .post-box {
+  display: none;
+}
+
+.post-title {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  font-family: inherit;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.post-panel[data-mode="edit"] .post-title {
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.post-meta-line {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.post-box {
   margin-top: 24px;
   min-height: 460px;
   padding: 32px;
@@ -38,8 +75,50 @@
 }
 
 #post-content {
-	width: 100%;
-	height: 100%;
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  border: 0;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+#post-content:disabled {
+  background: transparent;
+  cursor: default;
+}
+
+.post-panel[data-mode="edit"] #post-content {
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.post-toolbar {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.post-toolbar [data-action="save"],
+.post-toolbar [data-action="cancel"] {
+  display: none;
+}
+
+.post-panel[data-mode="edit"] .post-toolbar [data-action="edit"],
+.post-panel[data-mode="edit"] .post-toolbar [data-action="delete"] {
+  display: none;
+}
+
+.post-panel[data-mode="edit"] .post-toolbar [data-action="save"],
+.post-panel[data-mode="edit"] .post-toolbar [data-action="cancel"] {
+  display: inline-block;
 }
 
 

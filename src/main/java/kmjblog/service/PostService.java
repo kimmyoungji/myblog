@@ -105,7 +105,7 @@ public class PostService {
 		Post post = new Post();
 		post.setPostId(postId);
 		post.setTitle(title);
-		return postMapper.renamePost(post);
+		return postMapper.updatePostTitle(post);
 	}
 	
 	/**
@@ -164,7 +164,7 @@ public class PostService {
 		// 이동한 게시물 자신은 부모 정보 + 최종 순서를 한 번에 반영
 		post.setPostId(postId);
 		post.setSortSeq(insertAt);
-		return postMapper.relocatePost(post);
+		return postMapper.updatePostPosition(post);
 	}
 
 	/**
