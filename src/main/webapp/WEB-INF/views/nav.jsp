@@ -61,25 +61,28 @@
     		      .on("error.jstree", function (e, data) {
     		        console.error("jsTree 오류:", data);
     		      })
-	    		      .on("create_node.jstree", function (e, data) {
-	    		    	  	const tree = $('#category-jstree').jstree(true);
-	    		    	  	const isPost = data.node.type === "post";
-	    		    	  	let endpoint, body;
+    		      .on("changed.jstree", function (e, data) {
+					console.log("jstree node changed current node: ", data);	
+    		      })
+    		      .on("create_node.jstree", function (e, data) {
+    		    	  	const tree = $('#category-jstree').jstree(true);
+    		    	  	const isPost = data.node.type === "post";
+    		    	  	let endpoint, body;
 
-	    		    	  	if (isPost) {
-	    		    	  	  const parentNode = tree.get_node(data.node.parent);
-	    		    	  	  const parentIsPost = parentNode.type === "post";
-	    		    	  	  const categoryId = parentIsPost
-	    		    	  	    ? parentNode.original.data.categoryId
-	    		    	  	    : parentNode.id.replace("category_", "");
-	    		    	  	  const parentPostId = parentIsPost ? parentNode.id.replace("post_", "") : null;
-	    		    	  	  endpoint = '/blog/api/post';
-	    		    	  	  body = { title: data.node.text, categoryId: categoryId, parentPostId: parentPostId, sortSeq: data.position, content: '' };
-	    		    	  	} else {
-	    		    	  	  const parentCategoryId = data.node.parent === "#" ? null : data.node.parent.replace("category_", "");
-	    		    	  	  endpoint = '/blog/api/category';
-	    		    	  	  body = { name: data.node.text, parentCategoryId: parentCategoryId, sortSeq: data.position };
-	    		    	  	}
+    		    	  	if (isPost) {
+    		    	  	  const parentNode = tree.get_node(data.node.parent);
+    		    	  	  const parentIsPost = parentNode.type === "post";
+    		    	  	  const categoryId = parentIsPost
+    		    	  	    ? parentNode.original.data.categoryId
+    		    	  	    : parentNode.id.replace("category_", "");
+    		    	  	  const parentPostId = parentIsPost ? parentNode.id.replace("post_", "") : null;
+    		    	  	  endpoint = '/blog/api/post';
+    		    	  	  body = { title: data.node.text, categoryId: categoryId, parentPostId: parentPostId, sortSeq: data.position, content: '' };
+    		    	  	} else {
+    		    	  	  const parentCategoryId = data.node.parent === "#" ? null : data.node.parent.replace("category_", "");
+    		    	  	  endpoint = '/blog/api/category';
+    		    	  	  body = { name: data.node.text, parentCategoryId: parentCategoryId, sortSeq: data.position };
+    		    	  	}
 
 		   		    	fetch(endpoint, {
 		   		    	  method: 'POST',
@@ -96,11 +99,11 @@
 		   		    	  alert("생성 실패: " + err.message);
 		   		    	  tree.delete_node(data.node); // 실패 시 UI 롤백
 		   		    	});
-			  })
-			  .on("rename_node.jstree", function (e, data) {
+			  	})
+			  	.on("rename_node.jstree", function (e, data) {
 				  	const isPost = data.node.type === "post";
 				  	const id = data.node.id.replace(isPost ? "post_" : "category_", "");
-				  	const endpoint = (isPost ? '/blog/api/post/' : '/blog/api/category/') + id;
+				  	const endpoint = (isPost ? '/blog/api/post/' : '/blog/api/category/') + id + "/rename";
 				  	const body = isPost ? { title: data.text } : { name: data.text };
 
 				    fetch(endpoint, {
@@ -116,19 +119,55 @@
 				      alert("이름 변경 실패: " + err.message);
 				      $('#category-jstree').jstree(true).set_text(data.node, data.old); // 실패 시 이전 이름으로 복구
 				    });
-			  })
-			  .on("delete_node.jstree", function (e, data) {
-					  	const isPost = data.node.type === "post";
-					  	const id = data.node.id.replace(isPost ? "post_" : "category_", "");
-					  	const endpoint = (isPost ? '/blog/api/post/' : '/blog/api/category/') + id;
+			  	})
+			  	.on("delete_node.jstree", function (e, data) {
+				  	const isPost = data.node.type === "post";
+				  	const id = data.node.id.replace(isPost ? "post_" : "category_", "");
+				  	const endpoint = (isPost ? '/blog/api/post/' : '/blog/api/category/') + id;
+	
+				    fetch(endpoint, { method: 'DELETE' })
+				      .then(res => res.json())
+				      .then(result => {
+				        if (!result.success) throw new Error(result.message);
+				      })
+				      .catch(err => {
+				        alert("삭제 실패: " + err.message);
+				        // 삭제 실패 시 트리를 다시 불러와서 복구 (delete_node는 undo가 번거로움)
+				        location.reload();
+				      });
+			  	})
+				.on("move_node.jstree", function (e, data) {
+					  	const tree = $('#category-jstree').jstree(true);
+    		    	  	const isPost = data.node.type === "post";
+    		    	  	const id = data.node.id.replace(isPost ? "post_" : "category_", "");
+    		    	  	let endpoint, body;
 
-					    fetch(endpoint, { method: 'DELETE' })
+    		    	  	if (isPost) {
+    		    	  	  const parentNode = tree.get_node(data.node.parent);
+    		    	  	  const parentIsPost = parentNode.type === "post";
+    		    	  	  const categoryId = parentIsPost
+    		    	  	    ? parentNode.original.data.categoryId
+    		    	  	    : parentNode.id.replace("category_", "");
+    		    	  	  const parentPostId = parentIsPost ? parentNode.id.replace("post_", "") : null;
+    		    	  	  endpoint = '/blog/api/post/' + id + '/relocate';
+    		    	  	  body = { categoryId: categoryId, parentPostId: parentPostId, sortSeq: data.position };
+    		    	  	} else {
+    		    	  	  const parentCategoryId = data.node.parent === "#" ? null : data.node.parent.replace("category_", "");
+    		    	  	  endpoint = '/blog/api/category/' + id + '/relocate';
+    		    	  	  body = { parentCategoryId: parentCategoryId, sortSeq: data.position };
+    		    	  	}
+					  		
+					    fetch(endpoint, { 
+							method: 'PATCH',
+							headers: { 'Content-Type': 'application/json' },
+					        body: JSON.stringify(body)
+					    })
 					      .then(res => res.json())
 					      .then(result => {
 					        if (!result.success) throw new Error(result.message);
 					      })
 					      .catch(err => {
-					        alert("삭제 실패: " + err.message);
+					        alert("이동 실패: " + err.message);
 					        // 삭제 실패 시 트리를 다시 불러와서 복구 (delete_node는 undo가 번거로움)
 					        location.reload();
 					      });
@@ -138,7 +177,7 @@
     		          data: treeData,
     		          check_callback: true // 트리 편집 동작을 실행 여부 
     		        },
-    		        plugins: ["types", "contextmenu"],
+    		        plugins: ["types", "contextmenu", "dnd"],
     		        types: {
     		          "default": { icon: "jstree-icon-default" },
     		          "category": {

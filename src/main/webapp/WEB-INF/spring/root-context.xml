@@ -11,7 +11,10 @@
            http://www.springframework.org/schema/context/spring-context.xsd
            http://mybatis.org/schema/mybatis-spring
            http://mybatis.org/schema/mybatis-spring.xsd">
-           
+
+    <!-- 0) 트랜잭션 설정 (별도 파일: tx-context.xml) -->
+    <import resource="tx-context.xml" />
+
     <!-- 1) DB접속 정보 읽기 -->
     <context:property-placeholder location="classpath:properties/db.properties" />
     

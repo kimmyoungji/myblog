@@ -3,6 +3,7 @@ package kmjblog.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import kmjblog.domain.Post;
 
@@ -13,5 +14,8 @@ public interface PostMapper {
 	public int insertPost(Post post);
 	public int updatePost(Post post);
 	public int renamePost(Post post);
+	public int relocatePost(Post post);
+	public List<Post> selectSiblingPosts(@Param("parentPostId") Long parentPostId, @Param("categoryId") Long categoryId);
+	public int updatePostSortSeq(@Param("postId") Long postId, @Param("sortSeq") int sortSeq);
 	public int deletePost(Long postId);
 }
