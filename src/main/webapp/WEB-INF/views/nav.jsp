@@ -63,6 +63,17 @@
     		      })
     		      .on("changed.jstree", function (e, data) {
 					console.log("jstree node changed current node: ", data);	
+					const isPost = data.node.type === "post";
+					const id = data.node.id.replace(isPost ? "post_" : "category_", "");
+				  	const endpoint = (isPost ? '/blog/api/post/' : '/blog/api/category/') + id;
+					
+					// 만약 게시물이면 게시물 상세 페이지를 보여주고.
+					if(isPost) {
+						window.PostPanel.load(id);
+					}
+					// 만약 카테고리면 게시물 목록 페이지를 보여준다.
+					else {
+					}
     		      })
     		      .on("create_node.jstree", function (e, data) {
     		    	  	const tree = $('#category-jstree').jstree(true);
@@ -114,6 +125,12 @@
 				    .then(res => res.json())
 				    .then(result => {
 				      if (!result.success) throw new Error(result.message);
+				      // 현재 패널에 열려있는 게시물이면 제목과 dirty-check 기준값도 함께 갱신한다.
+				      // (안 해두면 패널에서 저장할 때 옛 제목으로 덮어써 버리거나, 취소 시 옛 제목으로 되돌아간다)
+				      const panel = document.querySelector("#post-panel");
+				      if (isPost && panel && panel.dataset.postId === id) {
+				        window.PostPanel.syncTitle(data.text);
+				      }
 				    })
 				    .catch(err => {
 				      alert("이름 변경 실패: " + err.message);
@@ -124,11 +141,16 @@
 				  	const isPost = data.node.type === "post";
 				  	const id = data.node.id.replace(isPost ? "post_" : "category_", "");
 				  	const endpoint = (isPost ? '/blog/api/post/' : '/blog/api/category/') + id;
-	
+
 				    fetch(endpoint, { method: 'DELETE' })
 				      .then(res => res.json())
 				      .then(result => {
 				        if (!result.success) throw new Error(result.message);
+				        // 삭제한 게시물이 현재 열려있던 게시물이라면 패널을 초기화
+				        const panel = document.querySelector("#post-panel");
+				        if (isPost && panel && panel.dataset.postId === id) {
+				          window.PostPanel.reset();
+				        }
 				      })
 				      .catch(err => {
 				        alert("삭제 실패: " + err.message);

@@ -61,24 +61,22 @@
     <update id="updatePost" parameterType="kmjblog.domain.Post">
     	UPDATE POSTS
     	<set>
-    		<if test="parentPostId != null">PARENT_POST_ID 	= #{parentPostId}, 	</if>
-    		<if test="sortSeq != null">		SORT_SEQ 		= #{sortSeq},	   	</if>
-    		<if test="fileGroupId != null">	FILE_GROUP_ID 	= #{fileGroupId},	</if>
     		<if test="title != null">		TITLE      		= #{title},			</if>
     		<if test="content != null">		CONTENT    		= #{content},		</if>
+    		<if test="fileGroupId != null">	FILE_GROUP_ID 	= #{fileGroupId},	</if>
     										UPDATED_AT 		= NOW()
     	</set>
     	 WHERE  POST_ID = #{postId}
     </update>
 
-    <update id="renamePost" parameterType="kmjblog.domain.Post">
+    <update id="updatePostTitle" parameterType="kmjblog.domain.Post">
     	UPDATE  POSTS
-    	   SET   TITLE      	= #{title}
+    	   SET   TITLE      = #{title}
        			,UPDATED_AT = NOW()
     	 WHERE  POST_ID    	= #{postId}
     </update>
     
-    <update id="relocatePost" parameterType="kmjblog.domain.Post">
+    <update id="updatePostPosition" parameterType="kmjblog.domain.Post">
     	UPDATE POSTS
     	   SET   CATEGORY_ID    = #{categoryId}
     	   		,PARENT_POST_ID = #{parentPostId}
@@ -111,7 +109,7 @@
     </update>
 
     <update id="deletePost" parameterType="java.lang.Long">
-    	UPDATE  POSTS
+    	UPDATE   POSTS
     	   SET   DEL_YN = 'Y'
     			,UPDATED_AT = NOW()
     	 WHERE  POST_ID = #{postId}
