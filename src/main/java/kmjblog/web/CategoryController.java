@@ -131,7 +131,7 @@ public class CategoryController {
 	 * @param request
 	 * @return
 	 */
-	@PatchMapping("/{categoryId}")
+	@PatchMapping("/{categoryId}/rename")
 	public ResponseEntity<ApiResponse<Integer>> renameCategory(
 			@PathVariable Long categoryId,
 			@RequestBody Category request
@@ -145,6 +145,29 @@ public class CategoryController {
 
 		// 성공 응답
 		ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(true, "카테고리 이름 변경 성공", rsltCnt);
+		return ResponseEntity.ok(apiResponse);
+	}
+	
+	/**
+	 * 카테고리 이동
+	 * @param categoryId
+	 * @param request
+	 * @return
+	 */
+	@PatchMapping("/{categoryId}/relocate")
+	public ResponseEntity<ApiResponse<Integer>> relocateCategory(
+			@PathVariable Long categoryId,
+			@RequestBody Category request
+	) {
+		// 카테고리 이름 변경
+		int rsltCnt = categoryService.relocateCategory(categoryId, request);
+		if(rsltCnt <= 0) {
+			ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(false, "카테고리 이동 실패", null);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+		}
+
+		// 성공 응답
+		ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(true, "카테고리 이동 성공", rsltCnt);
 		return ResponseEntity.ok(apiResponse);
 	}
 

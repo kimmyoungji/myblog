@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class CategoryService {
 	private final PostService postService;
 	
 	// 의존성 주입
-	private CategoryService(CategoryMapper categoryMapper, PostService postService) {
+	public CategoryService(CategoryMapper categoryMapper, PostService postService) {
 		this.categoryMapper = categoryMapper;
 		this.postService = postService;
 	}
@@ -71,10 +72,72 @@ public class CategoryService {
 	}
 	
 	/**
-	 * 카테고리 삭제
+	 * 카테고리 이동 (부모/순서가 바뀌면 형제 카테고리들의 SORT_SEQ도 함께 재정렬)
+	 * @return
+	 */
+	public int relocateCategory(Long categoryId, Category category) {
+
+		// 이동 전 상태 조회 (이전 부모를 알아야 재정렬 대상이 정해짐)
+		Category current = categoryMapper.selectCategory(categoryId);
+		if(current == null) {
+			return 0;
+		}
+
+		Long oldParentCategoryId = current.getParentCategoryId();
+		Long newParentCategoryId = category.getParentCategoryId();
+		boolean sameParent = Objects.equals(oldParentCategoryId, newParentCategoryId);
+
+		// 부모가 바뀌었다면 이전 부모에 남은 형제들의 SORT_SEQ를 재번호
+		if(!sameParent) {
+			List<Category> oldSiblings = categoryMapper.selectSiblingCategories(oldParentCategoryId);
+			int seq = 0;
+			for(Category sibling : oldSiblings) {
+				if(sibling.getCategoryId().equals(categoryId)) {
+					continue;
+				}
+				categoryMapper.updateCategorySortSeq(sibling.getCategoryId(), seq++);
+			}
+		}
+
+		// 새 부모에 이동한 카테고리를 원하는 위치로 끼워넣고 전체 재번호
+		List<Category> newSiblings = categoryMapper.selectSiblingCategories(newParentCategoryId);
+		List<Long> orderedIds = new ArrayList<Long>();
+		for(Category sibling : newSiblings) {
+			if(!sibling.getCategoryId().equals(categoryId)) {
+				orderedIds.add(sibling.getCategoryId());
+			}
+		}
+		int insertAt = Math.max(0, Math.min(category.getSortSeq(), orderedIds.size()));
+		orderedIds.add(insertAt, categoryId);
+
+		for(int i = 0; i < orderedIds.size(); i++) {
+			if(orderedIds.get(i).equals(categoryId)) {
+				continue; // 이동한 카테고리 자신은 부모 정보와 함께 아래에서 반영
+			}
+			categoryMapper.updateCategorySortSeq(orderedIds.get(i), i);
+		}
+
+		// 이동한 카테고리 자신은 부모 정보 + 최종 순서를 한 번에 반영
+		category.setCategoryId(categoryId);
+		category.setSortSeq(insertAt);
+		return categoryMapper.relocateCategory(category);
+	}
+	
+	/**
+	 * 카테고리 삭제 (하위 카테고리와 소속 게시물이 있으면 함께 삭제)
 	 * @return
 	 */
 	public int deleteCategory(Long categoryId) {
+		List<Category> childCategories = categoryMapper.selectSiblingCategories(categoryId);
+		for(Category childCategory : childCategories) {
+			this.deleteCategory(childCategory.getCategoryId());
+		}
+
+		List<Post> rootPosts = postService.selectRootPostsByCategory(categoryId);
+		for(Post rootPost : rootPosts) {
+			postService.deletePost(rootPost.getPostId());
+		}
+
 		return categoryMapper.deleteCategory(categoryId);
 	}
 	

@@ -66,22 +66,54 @@
     		<if test="fileGroupId != null">	FILE_GROUP_ID 	= #{fileGroupId},	</if>
     		<if test="title != null">		TITLE      		= #{title},			</if>
     		<if test="content != null">		CONTENT    		= #{content},		</if>
-    										DEL_YN     		= 'N'
     										UPDATED_AT 		= NOW()
     	</set>
     	 WHERE  POST_ID = #{postId}
     </update>
 
     <update id="renamePost" parameterType="kmjblog.domain.Post">
-    	UPDATE POSTS
-    	   SET  TITLE      = #{title}
+    	UPDATE  POSTS
+    	   SET   TITLE      	= #{title}
        			,UPDATED_AT = NOW()
-    	 WHERE  POST_ID    = #{postId}
+    	 WHERE  POST_ID    	= #{postId}
+    </update>
+    
+    <update id="relocatePost" parameterType="kmjblog.domain.Post">
+    	UPDATE POSTS
+    	   SET   CATEGORY_ID    = #{categoryId}
+    	   		,PARENT_POST_ID = #{parentPostId}
+    	   		,SORT_SEQ       = #{sortSeq}
+       			,UPDATED_AT 	= NOW()
+    	 WHERE  POST_ID    		= #{postId}
     </update>
 
-    <delete id="deletePost" parameterType="java.lang.Long">
-    	DELETE
+    <!-- 게시물 이동 시 재정렬 대상이 되는 형제 게시물 조회 (parentPostId가 없으면 categoryId 기준 최상위 형제) -->
+    <select id="selectSiblingPosts" resultType="kmjblog.domain.Post">
+    	SELECT  POST_ID
+    			,SORT_SEQ
     	  FROM  POSTS
+    	 WHERE  DEL_YN = 'N'
+    	   <if test="parentPostId != null">
+    	   AND  PARENT_POST_ID = #{parentPostId}
+    	   </if>
+    	   <if test="parentPostId == null">
+    	   AND  PARENT_POST_ID IS NULL
+    	   AND  CATEGORY_ID    = #{categoryId}
+    	   </if>
+    	 ORDER  BY SORT_SEQ ASC
+    </select>
+
+    <update id="updatePostSortSeq">
+    	UPDATE  POSTS
+    	   SET   SORT_SEQ   = #{sortSeq}
+    	   		,UPDATED_AT = NOW()
+    	 WHERE  POST_ID  = #{postId}
+    </update>
+
+    <update id="deletePost" parameterType="java.lang.Long">
+    	UPDATE  POSTS
+    	   SET   DEL_YN = 'Y'
+    			,UPDATED_AT = NOW()
     	 WHERE  POST_ID = #{postId}
-    </delete>
+    </update>
 </mapper>

@@ -16,7 +16,18 @@
           FROM  CATEGORIES 			/* 카테고리 테이블 */
          ORDER  BY PARENT_CATEGORY_ID ASC, SORT_SEQ ASC
     </select>
-    
+
+    <select id="selectCategory" parameterType="java.lang.Long" resultType="kmjblog.domain.Category">
+        SELECT   CATEGORY_ID
+        		,PARENT_CATEGORY_ID
+        		,NAME
+        		,SORT_SEQ
+        		,CREATED_AT
+        		,UPDATED_AT
+          FROM  CATEGORIES
+         WHERE  CATEGORY_ID = #{categoryId}
+    </select>
+
     <insert id="insertCategory" parameterType="kmjblog.domain.Category" useGeneratedKeys="true" keyProperty="categoryId">
     	INSERT INTO CATEGORIES
         (	
@@ -39,7 +50,7 @@
     	UPDATE  CATEGORIES 
     	   SET  PARENT_CATEGORY_ID = #{parentCategoryId}  	/* 부모 카테고리아이디 */
         		,NAME			   = #{name}				/* 카테고리명 */
-        		,SORT_SEQ        = #{sortSeq}			/* 정렬순서 */
+        		,SORT_SEQ        = #{sortSeq}				/* 정렬순서 */
         		,UPDATED_AT		   = NOW()	 				/* 수정일 */
          WHERE  CATEGORY_ID        = #{categoryId} 			/* 카테고리아이디 */
     </update>
@@ -51,6 +62,32 @@
          WHERE  CATEGORY_ID        = #{categoryId} 			/* 카테고리아이디 */
     </update>
     
+    <update id="relocateCategory" parameterType="kmjblog.domain.Category">
+    	UPDATE  CATEGORIES
+    	   SET   PARENT_CATEGORY_ID = #{parentCategoryId} /* 카테고리명 */
+    	   		,SORT_SEQ			= #{sortSeq}		  /* 정렬순서 */
+        		,UPDATED_AT		    = NOW()	 			  /* 수정일 */
+         WHERE  CATEGORY_ID         = #{categoryId} 	  /* 카테고리아이디 */
+    </update>
+
+    <!-- 카테고리 이동 시 재정렬 대상이 되는 형제 카테고리 조회 -->
+    <select id="selectSiblingCategories" resultType="kmjblog.domain.Category">
+    	SELECT  CATEGORY_ID
+    			,SORT_SEQ
+    	  FROM  CATEGORIES
+    	<where>
+    		<if test="parentCategoryId != null">PARENT_CATEGORY_ID = #{parentCategoryId}</if>
+    		<if test="parentCategoryId == null">PARENT_CATEGORY_ID IS NULL</if>
+    	</where>
+    	 ORDER  BY SORT_SEQ ASC
+    </select>
+
+    <update id="updateCategorySortSeq">
+    	UPDATE  CATEGORIES
+    	   SET  SORT_SEQ    = #{sortSeq}
+    	 WHERE  CATEGORY_ID = #{categoryId}
+    </update>
+
     <delete id="deleteCategory" parameterType="java.lang.Long">
     	DELETE 
     	  FROM  CATEGORIES

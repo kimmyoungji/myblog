@@ -106,7 +106,7 @@ public class PostController {
 	 * @param request
 	 * @return
 	 */
-	@PatchMapping("/{postId}")
+	@PatchMapping("/{postId}/rename")
 	public ResponseEntity<ApiResponse<Integer>> renamePost(
 			@PathVariable Long postId,
 			@RequestBody Post request
@@ -120,6 +120,29 @@ public class PostController {
 
 		// 성공 응답
 		ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(true, "게시물 제목 변경 성공", rsltCnt);
+		return ResponseEntity.ok(apiResponse);
+	}
+	
+	/**
+	 * 게시물 이동
+	 * @param postId
+	 * @param request
+	 * @return
+	 */
+	@PatchMapping("/{postId}/relocate")
+	public ResponseEntity<ApiResponse<Integer>> relocatePost(
+			@PathVariable Long postId,
+			@RequestBody Post request
+	) {
+		// 게시물 제목 변경
+		int rsltCnt = postService.relocatePost(postId, request);
+		if(rsltCnt <= 0) {
+			ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(false, "게시물 이동 실패", null);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+		}
+
+		// 성공 응답
+		ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(true, "게시물 이동 성공", rsltCnt);
 		return ResponseEntity.ok(apiResponse);
 	}
 
