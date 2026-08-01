@@ -122,6 +122,87 @@
 }
 
 
+/* ================ list 영역 css ================ */
+.list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.list__header h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Tabulator 기본 테마를 걷어내고 jsTree 아이콘(fa-folder/fa-file-alt)과
+   어울리는 플랫한 라인 스타일로 다시 그린다 */
+.post-list.tabulator {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: transparent;
+  font-family: inherit;
+}
+
+.post-list .tabulator-header {
+  background: transparent;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.post-list .tabulator-header .tabulator-col {
+  background: transparent;
+  border-right: 0;
+}
+
+.post-list .tabulator-col-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.post-list .tabulator-header-filter input {
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  padding: 4px 2px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.post-list .tabulator-header-filter input:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+}
+
+.post-list .tabulator-row {
+  background: transparent;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.post-list .tabulator-row:last-child {
+  border-bottom: 0;
+}
+
+.post-list .tabulator-row:hover {
+  background: var(--color-active);
+}
+
+.post-list .tabulator-cell {
+  border-right: 0;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.post-list .tabulator-placeholder {
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+
 /* ================ comment 영역 ================ */
 .comments {
   margin-top: 24px;

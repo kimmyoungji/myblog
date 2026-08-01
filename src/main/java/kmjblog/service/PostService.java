@@ -81,6 +81,13 @@ public class PostService {
 	 */
 	public int insertPost(Post post) {
 		post.setAuthorId((long) 9999);
+
+		if(post.getSortSeq() == null) {
+			// sortSeq가 없으면, 같은 부모/카테고리의 마지막 순서로 설정
+			List<Post> siblings = postMapper.selectSiblingPosts(post.getParentPostId(), post.getCategoryId());
+			post.setSortSeq(siblings.size());
+		}	
+
 		return postMapper.insertPost(post);
 	}
 
@@ -175,6 +182,15 @@ public class PostService {
 	public List<Post> selectRootPostsByCategory(Long categoryId) {
 		return postMapper.selectSiblingPosts(null, categoryId);
 	}
+
+	/**
+	 * 카테고리 하위 전체 게시물 조회 (하위 카테고리까지 모두 포함)
+	 * @param categoryId
+	 * @return
+	 */
+	public List<Post> selectPostsByCategorySubtree(Long categoryId) {
+		return postMapper.selectPostsByCategorySubtree(categoryId);
+	}	
 
 	/**
 	 * 게시물 삭제 (하위 게시물이 있으면 함께 삭제)

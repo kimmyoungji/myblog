@@ -15,7 +15,7 @@ public class Post {
 	private Long parentPostId;
 	private Long authorId;
 	private Long fileGroupId;
-	private int sortSeq;
+	private Integer sortSeq;
 	private String title;
 	private String content;
 	private int  viewCount;
@@ -68,11 +68,11 @@ public class Post {
 		this.fileGroupId = fileGroupId;
 	}
 
-	public int getSortSeq() {
+	public Integer getSortSeq() {
 		return sortSeq;
 	}
 
-	public void setSortSeq(int sortSeq) {
+	public void setSortSeq(Integer sortSeq) {
 		this.sortSeq = sortSeq;
 	}
 
