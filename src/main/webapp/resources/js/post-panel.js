@@ -25,6 +25,7 @@ window.PostPanel = (function () {
     postId = panel.dataset.postId || null;
     // 수정 진입 시점의 원본 title/content를 저장해두고, 저장 시 변경 여부를 비교한다.
     snapshot = { title: els.title.value, content: els.content.value };
+    window.PostEditor.init(els.content.value);
 
     panel.querySelector('[data-action="edit"]').addEventListener("click", enterEdit);
     panel.querySelector('[data-action="cancel"]').addEventListener("click", cancelEdit);
@@ -34,8 +35,8 @@ window.PostPanel = (function () {
 
   function setMode(mode) {
     panel.dataset.mode = mode;
-    els.content.disabled = mode !== PostPanelMode.EDIT;
     els.title.disabled = mode !== PostPanelMode.EDIT;
+    window.PostEditor.setMode(mode);
   }
 
   function renderPost(data) {
@@ -46,6 +47,7 @@ window.PostPanel = (function () {
     els.authorId.textContent = data.authorId ?? "";
     els.viewCount.textContent = data.viewCount ?? "";
     els.content.value = data.content ?? "";
+    window.PostEditor.setValue(els.content.value);
     snapshot = { title: els.title.value, content: els.content.value };
     setMode(PostPanelMode.VIEW);
   }
@@ -58,6 +60,7 @@ window.PostPanel = (function () {
     els.authorId.textContent = "";
     els.viewCount.textContent = "";
     els.content.value = "";
+    window.PostEditor.setValue("");
     snapshot = { title: "", content: "" };
     setMode(PostPanelMode.INITIAL);
   }
@@ -81,12 +84,12 @@ window.PostPanel = (function () {
   function enterEdit() {
     if (!postId) return;
     setMode(PostPanelMode.EDIT);
-    els.content.focus();
   }
 
   function cancelEdit() {
     els.title.value = snapshot.title;
     els.content.value = snapshot.content;
+    window.PostEditor.setValue(snapshot.content);
     setMode(PostPanelMode.VIEW);
 
     if (!postId) {
@@ -100,7 +103,8 @@ window.PostPanel = (function () {
   async function saveEdit() {
 
     const nextTitle = els.title.value;
-    const nextContent = els.content.value;
+    const nextContent = await window.PostEditor.getValue();
+    els.content.value = nextContent;
 
     // 제목/내용 모두 바뀌지 않았다면 서버로 요청을 보내지 않고 조회 모드로만 복귀한다.
     if (nextTitle === snapshot.title && nextContent === snapshot.content) {
