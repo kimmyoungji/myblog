@@ -21,6 +21,8 @@
 			<textarea id="post-content"
 					  disabled
 					  placeholder="띵거가 말하지 못한 것들...">${frstPost.content}</textarea>
+			<!-- Vditor가 생성될 영역 -->
+    		<div id="post-vditor"></div>
 
 			<div class="post-toolbar">
 				<button type="button" class="btn btn-text" data-action="delete">삭제</button>

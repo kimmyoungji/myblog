@@ -19,9 +19,18 @@
   overflow-y: auto;
 }
 
-.layout__main {
+.layout__detail {
   flex: 1;
   padding: var(--space-8);
+}
+
+.layout__list {
+  flex: 1;
+  padding: var(--space-8);
+}
+
+.is-hidden {
+  display: none;
 }
 
 .layout__footer {

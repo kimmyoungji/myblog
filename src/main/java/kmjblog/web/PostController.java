@@ -1,5 +1,7 @@
 package kmjblog.web;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import kmjblog.domain.ApiResponse;
@@ -33,6 +36,24 @@ public class PostController {
 		this.postService = postService;
 	}
 	
+	/**
+	 * 카테고리에 직속된 게시글 목록 조회
+	 * @param categoryId
+	 * @return
+	 */
+	@ResponseBody
+	@GetMapping
+	public ResponseEntity<ApiResponse<List<Post>>> getPostsByCategory(
+			@RequestParam Long categoryId
+	){
+		// 카테고리 직속 게시글 목록 조회
+		List<Post> posts = postService.selectPostsByCategorySubtree(categoryId);
+
+		// 성공 응답
+		ApiResponse<List<Post>> apiResponse = new ApiResponse<List<Post>>(true, "게시글 목록 조회 성공", posts);
+		return ResponseEntity.ok(apiResponse);
+	}
+
 	/**
 	 * 게시글 단건 조회
 	 * @param postId
