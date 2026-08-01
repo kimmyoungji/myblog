@@ -18,12 +18,14 @@
 		</div>
 
 		<article class="post-box">
+			<!-- Vditor의 실제 데이터 저장소. 화면에는 표시하지 않고 post-editor.js가 값을 읽고 쓰는 용도로만 쓴다. -->
 			<textarea id="post-content"
-					  disabled
-					  placeholder="띵거가 말하지 못한 것들...">${frstPost.content}</textarea>
+					  class="is-hidden"
+					  disabled>${frstPost.content}</textarea>
 			<!-- Vditor가 생성될 영역 -->
     		<div id="post-vditor"></div>
-
+			<!-- 조회 모드에서 마크다운을 렌더링해서 보여주는 영역 -->
+			<div id="post-preview"></div>
 			<div class="post-toolbar">
 				<button type="button" class="btn btn-text" data-action="delete">삭제</button>
 				<button type="button" class="btn btn-text" data-action="cancel">취소</button>
