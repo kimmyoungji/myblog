@@ -21,13 +21,27 @@
   	
   	<!-- 3. Spring MVC의 핵심 Servlet 등록 -->
 	<servlet>
+	    <!-- 3-0. servlet 명명 -->
 	    <servlet-name>appServlet</servlet-name>
+	    
+	    <!-- 3-1. dispatcherServlet 등록 -->
 	    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	    
+	    <!-- 3-2. servlet 설정 파일 연결 -->
 	    <init-param>
 	        <param-name>contextConfigLocation</param-name>
 	        <param-value>/WEB-INF/spring/servlet-context.xml</param-value> <!-- DispatcherServlet이 읽을 Spring MVC 설정 파일 위치 -->
 	    </init-param>
+	    
+	    <!-- 3-3. 초기 servlet 생성 수: 1 -->
 	    <load-on-startup>1</load-on-startup> <!-- Tomcat 시작 시 Servlet을 미리 생성 -->
+	    
+	    <!-- 3-4. multipart 설정 -->
+	    <multipart-config>
+		    <max-file-size>10485760</max-file-size> 			<!-- 파일 한 개당 최대 10MB -->
+		    <max-request-size>12582912</max-request-size> 		<!-- multipart 요청 전체 최대 12MB -->
+		    <file-size-threshold>1048576</file-size-threshold> 	<!-- 파일이 1MB를 초과하면 임시 디스크에 저장 -->
+		</multipart-config>
 	</servlet>
 	
 	<!-- 4. 모든 요청을 DispatcherServlet으로 보냄 -->
