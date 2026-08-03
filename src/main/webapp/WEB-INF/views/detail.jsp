@@ -15,7 +15,6 @@
 				작성자: <span id="post-authorId"><c:out value='${frstPost.authorId}'/></span>
 				/ 최종작성일: <span id="post-updatedAt"><c:out value='${frstPost.updatedAt}'/></span>
 				/ 조회수: <span id="post-viewCount"><c:out value='${frstPost.viewCount}'/></span>
-				/ xxs-test: <span id="post-viewCount"><c:out value='${frstPost.title}'/></span>
 			</p>
 		</div>
 

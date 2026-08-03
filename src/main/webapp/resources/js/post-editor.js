@@ -24,6 +24,32 @@ window.PostEditor = (function () {
         renderPreview(initialValue); 
         readyResolve();
       },
+      upload: {
+	      url: '/blog/api/file/upload', // Your server-side upload endpoint
+	      max: 12 * 1024 * 1024,    // Max file size in bytes (e.g., 10MB)
+	      fieldName: 'file',        // Form field name for the file
+	      multiple: false,
+		  headers: {
+	        Authorization: 'Bearer YOUR_TOKEN'
+	      },
+		  format: function(files, responseText) {
+	          	debugger;
+	          	const response = JSON.parse(responseText);
+	          	const vditorResponse = {
+		            code: response.success ? 1 : 0,
+		            msg: response.message ?? "",
+		            data: response.data
+				};
+				console.log("vditorResponse: ", vditorResponse);
+				return JSON.stringify(vditorResponse);
+		  },
+	      /* success: (ed, msg) => {
+	      	console.log('Upload success:', msg);
+	      }, */
+	      error: (msg) => {
+	      	console.error('Upload failed:', msg);
+	      }
+	    }
     });
     }catch(e) {
       console.error("Vditor 초기화 중 오류 발생:", e);

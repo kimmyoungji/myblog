@@ -36,6 +36,8 @@
 
     <!-- 3) /resources/** 요청은 정적 리소스로 처리 -->
     <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/blog/file/temp/**"
+    			   location="file:/Users/myoungjikim/dev/kbc_std/myblog/blog/upload/temp/" />
 
     <!-- 4) Controller가 반환한 view 이름을 JSP 경로로 변환 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
