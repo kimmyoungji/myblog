@@ -1,2 +1,3 @@
 target/*
-./upload/*
+upload/*
+.DS_Store
