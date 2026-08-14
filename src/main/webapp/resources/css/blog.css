@@ -1,4 +1,22 @@
 
+/* 관리자 로그인 상태가 아니면 글쓰기/수정/삭제 등 관리자 전용 컨트롤을 숨긴다. */
+body:not(.is-admin) [data-admin-only] {
+	display: none;
+}
+
+/* ================ header 영역 css ================ */
+.user-menu {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 로그인 페이지에서는 헤더의 로그인 버튼을 숨긴다. */
+body.page-login .user-menu {
+    display: none;
+}
+
 /* ================ nav 영역 css ================ */
 .category-nav {
 	width: 100%;
@@ -191,6 +209,66 @@
   padding: 10px 12px;
   font-size: 14px;
   color: var(--color-text);
+}
+
+/* ================ 로그인 화면 css ================ */
+.login-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+}
+
+/* .post-box와 동일한 카드 톤(테두리/radius/padding)을 재사용해 통일감을 맞춘다 */
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  padding: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.login-title {
+  margin: 0 0 var(--space-6);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.login-form .form-field {
+  margin-bottom: var(--space-4);
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.login-form input {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.login-error {
+  min-height: 18px;
+  margin: 0 0 var(--space-4);
+  color: var(--color-danger);
+  font-size: 13px;
+}
+
+.login-submit {
+  width: 100%;
 }
 
 .post-list .tabulator-placeholder {

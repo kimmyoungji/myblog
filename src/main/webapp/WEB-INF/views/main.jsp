@@ -30,30 +30,4 @@
 			</div>
 		</article>
 	</div>
-
-	<section class="comments">
-		<h3>댓글</h3>
-
-		<div class="comment-card">
-			<strong>작성자: comments.author_id.user_email</strong>
-			<p>안녕하세요</p>
-			<span>작성일시: 2026.05.13 00:33</span>
-			<button type="button">답글쓰기</button>
-		</div>
-
-		<div class="comment-card reply">
-			<strong>작성자: comments.author_id.user_email</strong>
-			<p>안녕하세요~</p>
-			<span>작성일시: 2026.05.13 00:33</span>
-			<button type="button">답글쓰기</button>
-		</div>
-
-		<div class="comment-form">
-			<textarea placeholder="댓글을 남겨보세요"></textarea>
-			<div class="form-actions">
-				<button type="button" class="btn btn-text">취소</button>
-				<button type="button" class="btn btn-primary">등록</button>
-			</div>
-		</div>
-	</section>
 </section>

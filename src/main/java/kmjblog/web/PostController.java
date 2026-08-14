@@ -1,6 +1,10 @@
 package kmjblog.web;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import kmjblog.domain.ApiResponse;
+import kmjblog.domain.LoginUser;
 import kmjblog.domain.Post;
 import kmjblog.service.PostService;
 
@@ -85,8 +90,20 @@ public class PostController {
 	 */
 	@PostMapping
 	public ResponseEntity<ApiResponse<Long>> insertPost(
-			@RequestBody Post request
+			@RequestBody Post request,
+			HttpServletRequest httpRequest
 	) {
+		// 작성자 = 현재 로그인한 사용자. AuthInterceptor가 이 경로의 쓰기 요청은
+		// 이미 로그인/ADMIN 권한을 검증했으므로 세션에 LOGIN_USER가 있는 게 보장되지만,
+		// 이 컨트롤러가 다른 경로로도 호출될 가능성에 대비해 방어적으로 한 번 더 확인한다.
+		HttpSession session = httpRequest.getSession(false);
+		LoginUser loginUser = session == null ? null : (LoginUser) session.getAttribute(LoginUser.SESSION_KEY);
+		if (loginUser == null) {
+			ApiResponse<Long> apiResponse = new ApiResponse<Long>(false, "로그인이 필요합니다", null);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+		}
+		request.setAuthorId(loginUser.getUserId());
+
 		// 게시물 추가
 		int rsltCnt = postService.insertPost(request);
 		if(rsltCnt <= 0) {
@@ -108,7 +125,7 @@ public class PostController {
 	public ResponseEntity<ApiResponse<Integer>> updatePost(
 			@PathVariable Long postId,
 			@RequestBody Post request
-	) {		
+	) throws IOException {
 		// 카테고리 수정
 		int rsltCnt = postService.updatePost(postId, request);
 		if(rsltCnt <= 0) {
@@ -175,7 +192,7 @@ public class PostController {
 	@DeleteMapping("/{postId}")
 	public ResponseEntity<ApiResponse<Integer>> deletePost(
 			@PathVariable Long postId
-	) {
+	) throws IOException {
 		// 게시물 삭제
 		int rsltCnt = postService.deletePost(postId);
 		if(rsltCnt <= 0) {
@@ -185,6 +202,34 @@ public class PostController {
 		
 		// 성공 응답
 		ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(true, "게시물 삭제 성공", rsltCnt);
+		return ResponseEntity.ok(apiResponse);
+	}
+
+	/**
+	 * 게시물 일괄삭제 (하위 게시물이 있으면 함께 삭제)
+	 * @param postIds
+	 * @return
+	 */
+	@ResponseBody
+	@DeleteMapping
+	public ResponseEntity<ApiResponse<Integer>> deletePosts(
+			@RequestBody List<Long> postIds
+	) throws IOException {
+		// 예외처리: 삭제 대상이 없는 경우
+		if(postIds == null || postIds.isEmpty()) {
+			ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(false, "삭제할 게시물이 없습니다", null);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+		}
+
+		// 게시물 일괄삭제
+		int rsltCnt = postService.deletePosts(postIds);
+		if(rsltCnt <= 0) {
+			ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(false, "게시물 일괄삭제 실패", null);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+		}
+
+		// 성공 응답
+		ApiResponse<Integer> apiResponse = new ApiResponse<Integer>(true, "게시물 일괄삭제 성공", rsltCnt);
 		return ResponseEntity.ok(apiResponse);
 	}
 }

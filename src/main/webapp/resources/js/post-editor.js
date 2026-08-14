@@ -6,6 +6,12 @@ window.PostEditor = (function () {
   let ready;
   let readyResolve;
 
+  // vditor 인스턴스는 앱 시작 시 한 번만 만들어져 여러 게시글에서 재사용되므로,
+  // 업로드 url은 고정값이 아니라 그때그때의 postId로 다시 조립해야 한다.
+  function buildUploadUrl() {
+    return "/blog/api/file/upload/vditor/" + window.AppState.getPostId();
+  }
+
   function init(initialValue) {
     ready = new Promise((resolve) => {
       readyResolve = resolve;
@@ -25,27 +31,19 @@ window.PostEditor = (function () {
         readyResolve();
       },
       upload: {
-	      url: '/blog/api/file/upload', // Your server-side upload endpoint
+	      url: buildUploadUrl(), // 초기값. 실제 업로드 시점의 postId는 setMode(edit)에서 다시 동기화한다.
 	      max: 12 * 1024 * 1024,    // Max file size in bytes (e.g., 10MB)
 	      fieldName: 'file',        // Form field name for the file
 	      multiple: false,
-		  headers: {
-	        Authorization: 'Bearer YOUR_TOKEN'
-	      },
 		  format: function(files, responseText) {
-	          	debugger;
 	          	const response = JSON.parse(responseText);
 	          	const vditorResponse = {
 		            code: response.success ? 1 : 0,
 		            msg: response.message ?? "",
 		            data: response.data
 				};
-				console.log("vditorResponse: ", vditorResponse);
 				return JSON.stringify(vditorResponse);
 		  },
-	      /* success: (ed, msg) => {
-	      	console.log('Upload success:', msg);
-	      }, */
 	      error: (msg) => {
 	      	console.error('Upload failed:', msg);
 	      }
@@ -75,6 +73,8 @@ window.PostEditor = (function () {
   async function setMode(mode) {
     await ready;
     if (mode === "edit") {
+      // 편집 진입 시점의 postId로 업로드 url을 다시 맞춰둔다.
+      vditor.vditor.options.upload.url = buildUploadUrl();
       vditor.enable();
       vditor.focus();
     } else {

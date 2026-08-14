@@ -7,6 +7,10 @@ const PostPanelMode = Object.freeze({
 
 window.PostPanel = (function () {
   let panel, detailSection, els, postId, snapshot;
+  // "새 글 작성"으로 막 만들어져 아직 한 번도 저장된 적 없는 게시글인지 여부.
+  // 이 상태에서 취소하면(빈 글이 DB에 남더라도) 빈 조회 화면을 보여주지 않고
+  // 목록으로 돌아간다.
+  let isUnsavedNewPost = false;
 
   function init() {
     panel = document.querySelector("#post-panel");
@@ -40,7 +44,9 @@ window.PostPanel = (function () {
   }
 
   function renderPost(data) {
+    isUnsavedNewPost = false;
     postId = data.postId;
+	window.AppState.setPostId(data.postId);
     panel.dataset.postId = postId;
     els.title.value = data.title ?? "";
     els.updatedAt.textContent = data.updatedAt ?? "";
@@ -53,7 +59,9 @@ window.PostPanel = (function () {
   }
 
   function resetPanel() {
+    isUnsavedNewPost = false;
     postId = null;
+    window.AppState.setPostId(null);
     panel.dataset.postId = "";
     els.title.value = "";
     els.updatedAt.textContent = "";
@@ -67,26 +75,31 @@ window.PostPanel = (function () {
 
   async function loadPost(id) {
     try {
-      const response = await fetch(`/blog/api/post/${id}`);
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "게시글 조회 요청 실패");
-      }
-
-      renderPost(result.data);
+      const data = await window.Api.get(`/blog/api/post/${id}`);
+      renderPost(data);
     } catch (error) {
       console.error(error);
       alert("게시글을 불러오는 중 오류가 발생했습니다: " + error.message);
+      throw error; // 호출자가 실패를 알 수 있도록 다시 던진다
     }
   }
 
   function enterEdit() {
     if (!postId) return;
+	window.AppState.setPostId(postId);
     setMode(PostPanelMode.EDIT);
   }
 
   function cancelEdit() {
+    // 한 번도 저장된 적 없는 새 글이면, 서버의 빈 row는 그대로 둔 채(삭제하지
+    // 않음) 빈 조회 화면을 보여주는 대신 목록으로 돌아간다.
+    if (isUnsavedNewPost) {
+      window.PostList.show();
+      window.PostPanel.reset();
+      window.PostPanel.hide();
+      return;
+    }
+
     els.title.value = snapshot.title;
     els.content.value = snapshot.content;
     window.PostEditor.setValue(snapshot.content);
@@ -112,70 +125,51 @@ window.PostPanel = (function () {
       return;
     }
 
-    // 게시글 생성/수정 공통 body
-    const body = {
-      categoryId: window.AppState.getCategoryId(),
-      title: nextTitle,
-      content: nextContent
-    };
-
-    // 게시글 생성/수정 공통 endpoint
-    const endpoint = postId ? `/blog/api/post/${postId}` : "/blog/api/post";
-
     // 수정
-    if(postId != null || postId != undefined) {
+    const postId = window.AppState.getPostId();
+    if(postId) {
       try {
-      const response = await fetch(endpoint, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+      await window.Api.put(`/blog/api/post/${postId}`, {
+        categoryId: window.AppState.getCategoryId(),
+        title: nextTitle,
+        content: nextContent
       });
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "게시글 수정 실패");
-      }
 
       snapshot = { title: nextTitle, content: nextContent };
+      isUnsavedNewPost = false;
       setMode(PostPanelMode.VIEW);
+	  window.CategoryTree.reload();
       } catch (error) {
         console.error(error);
         alert("게시글 수정 중 오류가 발생했습니다: " + error.message);
       }
-    }
-    // 생성
-    else {
-      fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        })
-          .then((res) => res.json())
-          .then(async (result) => {
-            if (!result.success) throw new Error(result.message);
-            // 생성 성공 시 트리를 다시 불러와 새 게시글 노드가 보이게 하고, 패널을 조회 모드로 전환한다.
-            await window.CategoryTree.reload();
-
-            postId = result.data.postId;
-            panel.dataset.postId = postId;
-            
-            window.AppState.setPostId(postId);
-            snapshot = { title: nextTitle, content: nextContent };
-            setMode(PostPanelMode.VIEW);
-          })
-          .catch((err) => {
-            alert("생성 실패: " + err.message);
-          });
+    }else {
+      console.error("게시글 ID가 존재하지 않아 수정할 수 없습니다.");
     }
     
   }
 
   function createNewPost() {
-    window.PostList.hide();
-    window.PostPanel.show();
-    resetPanel();
-    setMode(PostPanelMode.EDIT);
-    els.title.focus();
+    const body = {
+      categoryId: window.AppState.getCategoryId(),
+      title:"",
+      content:""
+    };
+
+    window.Api.post("/blog/api/post", body)
+      .then((newPostId) => {
+        resetPanel();
+        isUnsavedNewPost = true;
+        window.AppState.setPostId(newPostId);
+        postId = newPostId;
+        setMode(PostPanelMode.EDIT);
+        window.PostList.hide();
+        window.PostPanel.show();
+        els.title.focus();
+      })
+      .catch((err) => {
+        alert("게시물 생성 실패: " + err.message);
+      });
   }
 
   async function deletePost() {
@@ -193,15 +187,7 @@ window.PostPanel = (function () {
     }
 
     try {
-      const response = await fetch(`/blog/api/post/${postId}`, {
-        method: "DELETE",
-      });
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "게시글 삭제 실패");
-      }
-
+      await window.Api.delete(`/blog/api/post/${postId}`);
       resetPanel();
     } catch (error) {
       console.error(error);

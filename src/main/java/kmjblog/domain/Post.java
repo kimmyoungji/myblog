@@ -18,6 +18,7 @@ public class Post {
 	private Integer sortSeq;
 	private String title;
 	private String content;
+	private String status;
 	private int  viewCount;
 	private char delYn;
 	private LocalDateTime createdAt;
@@ -90,6 +91,14 @@ public class Post {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public int getViewCount() {

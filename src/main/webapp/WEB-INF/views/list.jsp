@@ -4,9 +4,24 @@ pageEncoding="UTF-8"%>
 <section class="layout__list is-hidden">
   <div class="list__header">
     <h2>게시글 목록</h2>
-    <button type="button" class="btn btn-primary" id="btn-new-post">
-      새 글 작성
-    </button>
+    <div class="btn-box">
+      <button
+        type="button"
+        class="btn btn-danger"
+        id="btn-bulk-delete"
+        data-admin-only
+      >
+        선택 삭제
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="btn-new-post"
+        data-admin-only
+      >
+        새 글 작성
+      </button>
+    </div>
   </div>
 
   <div id="post-list" class="post-list"></div>

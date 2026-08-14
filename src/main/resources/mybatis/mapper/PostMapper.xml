@@ -7,21 +7,21 @@
 <mapper namespace="kmjblog.mapper.PostMapper">
 
     <select id="selectPostList">
-        SELECT  POST_ID 
-        		,CATEGORY_ID
-        		,PARENT_POST_ID
-        		,SORT_SEQ
-        		,AUTHOR_ID
-        		,FILE_GROUP_ID
-        		,TITLE
-        		/* ,CONTENT */
-        		,VIEW_COUNT 
-        		,DEL_YN
-        		,CREATED_AT
-        		,UPDATED_AT
-		  FROM  POSTS
-		 WHERE  DEL_YN = 'N'
-		 ORDER  BY CATEGORY_ID ASC, SORT_SEQ ASC
+        SELECT  post_id 
+        		,category_id
+        		,parent_post_id
+        		,sort_seq
+        		,author_id
+        		,title
+        		/* ,content */
+        		,status
+        		,view_count 
+        		,del_yn
+        		,created_at
+        		,updated_at
+		  FROM  posts
+		 WHERE  del_yn = 'N'
+		 ORDER  BY category_id ASC, sort_seq ASC
     </select>
     
     <select id="selectPost" parameterType="java.lang.Long" resultType="kmjblog.domain.Post">
@@ -29,28 +29,28 @@
     </select>
     
     <insert id="insertPost" parameterType="kmjblog.domain.Post" useGeneratedKeys="true" keyProperty="postId">
-    	INSERT INTO POSTS
+    	INSERT INTO posts
     	(
-       		 CATEGORY_ID
-       		,PARENT_POST_ID
-       		,SORT_SEQ
-       		,AUTHOR_ID
-       		,FILE_GROUP_ID
-       		,TITLE
-       		,CONTENT
-       		,VIEW_COUNT
-       		,DEL_YN
-       		,CREATED_AT
-       		,UPDATED_AT
+       		 category_id
+       		,parent_post_id
+       		,sort_seq
+       		,author_id
+       		,title
+       		,content
+       		,status
+       		,view_count
+       		,del_yn
+       		,created_at
+       		,updated_at
     	)VALUES
     	(
     		 #{categoryId}
     		,#{parentPostId}
     		,#{sortSeq}
     		,#{authorId}
-    		,#{fileGroupId}
     		,#{title}
     		,#{content}
+    		,'DRAFT'
     		,0
     		,'N'
     		,NOW()
@@ -59,90 +59,100 @@
     </insert>
 
     <update id="updatePost" parameterType="kmjblog.domain.Post">
-    	UPDATE POSTS
+    	UPDATE posts
     	<set>
-    		<if test="title != null">		TITLE      		= #{title},			</if>
-    		<if test="content != null">		CONTENT    		= #{content},		</if>
-    		<if test="fileGroupId != null">	FILE_GROUP_ID 	= #{fileGroupId},	</if>
-    										UPDATED_AT 		= NOW()
+    		<if test="title != null">		title      		= #{title},			</if>
+    		<if test="content != null">		content    		= #{content},		</if>
+    		<if test="content != null">		status    		= #{status},		</if>
+    										updated_at 		= NOW()
     	</set>
-    	 WHERE  POST_ID = #{postId}
+    	 WHERE  post_id = #{postId}
     </update>
 
     <update id="updatePostTitle" parameterType="kmjblog.domain.Post">
-    	UPDATE  POSTS
-    	   SET   TITLE      = #{title}
-       			,UPDATED_AT = NOW()
-    	 WHERE  POST_ID    	= #{postId}
+    	UPDATE  posts
+    	   SET   title      = #{title}
+       			,updated_at = NOW()
+    	 WHERE  post_id    	= #{postId}
     </update>
     
     <update id="updatePostPosition" parameterType="kmjblog.domain.Post">
-    	UPDATE  POSTS
-    	   SET  CATEGORY_ID    = #{categoryId}
-    	   	    ,PARENT_POST_ID = #{parentPostId}
-    	   		,SORT_SEQ       = #{sortSeq}
-       			,UPDATED_AT 	= NOW()
-    	 WHERE  POST_ID    		= #{postId}
+    	UPDATE  posts
+    	   SET  category_id    = #{categoryId}
+    	   	    ,parent_post_id = #{parentPostId}
+    	   		,sort_seq       = #{sortSeq}
+       			,updated_at 	= NOW()
+    	 WHERE  post_id    		= #{postId}
     </update>
 
     <!-- 게시물 이동 시 재정렬 대상이 되는 형제 게시물 조회 (parentPostId가 없으면 categoryId 기준 최상위 형제) -->
     <select id="selectSiblingPosts" resultType="kmjblog.domain.Post">
-    	SELECT   POST_ID
-    			,TITLE
-    			,AUTHOR_ID
-    			,SORT_SEQ
-    			,VIEW_COUNT
-    			,UPDATED_AT
-    	  FROM  POSTS
-    	 WHERE  DEL_YN = 'N'
+    	SELECT   post_id
+    			,title
+    			,author_id
+    			,sort_seq
+    			,view_count
+    			,updated_at
+    	  FROM  posts
+    	 WHERE  del_yn = 'N'
     	   <if test="parentPostId != null">
-    	   AND  PARENT_POST_ID = #{parentPostId}
+    	   AND  parent_post_id = #{parentPostId}
     	   </if>
     	   <if test="parentPostId == null">
-    	   AND  PARENT_POST_ID IS NULL
-    	   AND  CATEGORY_ID    = #{categoryId}
+    	   AND  parent_post_id IS NULL
+    	   AND  category_id    = #{categoryId}
     	   </if>
-    	 ORDER  BY SORT_SEQ ASC
+    	 ORDER  BY sort_seq ASC
     </select>
 
 	<!-- 카테고리 자신 + PARENT_CATEGORY_ID로 이어지는 모든 하위 서브카테고리까지 포함해서 그 안의 게시글 전체 조회 -->
 	<select id="selectPostsByCategorySubtree" parameterType="java.lang.Long" resultType="kmjblog.domain.Post">
-		WITH RECURSIVE PARENT_CATEGORIES AS (
-			SELECT * FROM CATEGORIES WHERE CATEGORY_ID = #{categoryId}
+		WITH RECURSIVE parent_categories AS (
+			SELECT * FROM categories WHERE category_id = #{categoryId}
 
 			UNION ALL
 			
-			SELECT C.* 
-			FROM CATEGORIES C
-			INNER JOIN PARENT_CATEGORIES PC 
-			ON C.PARENT_CATEGORY_ID = PC.CATEGORY_ID
+			SELECT c.* 
+			FROM categories c
+			INNER JOIN parent_categories pc 
+			ON c.parent_category_id = pc.category_id
 		)
-		SELECT  P.POST_ID, 
-				P.PARENT_POST_ID,
-				P.CATEGORY_ID,
-				P.SORT_SEQ,
-				P.AUTHOR_ID,
-				P.FILE_GROUP_ID,
-				P.TITLE
-		FROM PARENT_CATEGORIES PC 
-		LEFT OUTER JOIN POSTS P 
-		ON PC.category_id  = P.category_id 
-		WHERE P.POST_ID IS NOT NULL 
-		AND P.DEL_YN = 'N'
-		ORDER BY  P.CATEGORY_ID, P.SORT_SEQ;
+		SELECT  p.post_id, 
+				p.parent_post_id,
+				p.category_id,
+				p.sort_seq,
+				p.author_id,
+				p.title
+		FROM parent_categories pc 
+		LEFT OUTER JOIN posts p 
+		ON pc.category_id  = p.category_id 
+		WHERE p.post_id IS NOT NULL 
+		AND p.del_yn = 'N'
+		ORDER BY  p.category_id, p.sort_seq;
 	</select>
 
     <update id="updatePostSortSeq">
-    	UPDATE  POSTS
-    	   SET   SORT_SEQ   = #{sortSeq}
-    	   		,UPDATED_AT = NOW()
-    	 WHERE  POST_ID  = #{postId}
+    	UPDATE  posts
+    	   SET   sort_seq   = #{sortSeq}
+    	   		,updated_at = NOW()
+    	 WHERE  post_id  = #{postId}
     </update>
 
     <update id="deletePost" parameterType="java.lang.Long">
-    	UPDATE   POSTS
-    	   SET   DEL_YN = 'Y'
-    			,UPDATED_AT = NOW()
-    	 WHERE  POST_ID = #{postId}
+    	UPDATE   posts
+    	   SET   del_yn = 'Y'
+    			,updated_at = NOW()
+    	 WHERE  post_id = #{postId}
+    </update>
+
+    <!-- 서비스단에서 하위 게시물까지 모두 모은 id 목록을 받아 한 번의 UPDATE로 소프트삭제 -->
+    <update id="deletePosts">
+    	UPDATE  posts
+    	   SET  del_yn 	= 'Y'
+    	   		,updated_at = NOW()
+    	 WHERE  post_id IN
+    	 		<foreach item="postId" collection="postIds" open="(" separator="," close=")">
+    	 			#{postId}
+    	 		</foreach>
     </update>
 </mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kmjblog.mapper.CommFileGroupMapper">
+
+    <select id="selectFileGroupByPostId" parameterType="java.lang.Long">
+    	select * from file_groups
+    	where post_id = #{postId}
+    </select>
+    
+    <insert id="insertFileGroup" parameterType="kmjblog.domain.CommFileGroupVO">
+    	insert into file_groups
+    	(
+    		post_id,
+    		created_at
+    	)
+    	values
+    	(
+    		#{postId},
+    		NOW()
+    	)
+    </insert>
+    
+    <delete id="deleteFileGroupByPostId" parameterType="java.lang.Long">
+    	delete from file_groups
+    	where post_id = #{postId}
+    </delete>
+</mapper>

@@ -28,15 +28,15 @@
 			<!-- 조회 모드에서 마크다운을 렌더링해서 보여주는 영역 -->
 			<div id="post-preview"></div>
 			<div class="post-toolbar">
-				<button type="button" class="btn btn-text" data-action="delete">삭제</button>
+				<button type="button" class="btn btn-text" data-action="delete" data-admin-only>삭제</button>
 				<button type="button" class="btn btn-text" data-action="cancel">취소</button>
-				<button type="button" class="btn btn-primary" data-action="edit">수정</button>
+				<button type="button" class="btn btn-primary" data-action="edit" data-admin-only>수정</button>
 				<button type="button" class="btn btn-primary" data-action="save">저장</button>
 			</div>
 		</article>
 	</div>
 
-	<section class="comments">
+	<%--  <section class="comments">
 		<h3>댓글</h3>
 
 		<div class="comment-card">
@@ -60,5 +60,5 @@
 				<button type="button" class="btn btn-primary">등록</button>
 			</div>
 		</div>
-	</section>
+	</section> --%>
 </section>

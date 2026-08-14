@@ -3,5 +3,5 @@
 <!DOCTYPE html>
  <header class="layout__header">
    <h1 class="logo">dinguru</h1>
-   <div class="user-menu">👤 Login / sign in</div>
+   <div class="user-menu" id="user-menu">👤 Login / sign in</div>
 </header>

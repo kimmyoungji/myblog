@@ -110,7 +110,18 @@
       <version>3.1.0</version>
       <scope>provided</scope>
 	</dependency>
+	
+	<!-- spring-secutiry-crypto -->
+	<!-- Source: https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
+	<dependency>
+	    <groupId>org.springframework.security</groupId>
+	    <artifactId>spring-security-crypto</artifactId>
+	    <version>7.1.0-RC1</version>
+	    <scope>compile</scope>
+	</dependency>
   </dependencies>
+  
+  
   
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>
