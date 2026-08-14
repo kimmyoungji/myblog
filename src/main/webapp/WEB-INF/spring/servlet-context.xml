@@ -36,8 +36,8 @@
 
     <!-- 3) /resources/** 요청은 정적 리소스로 처리 -->
     <mvc:resources mapping="/resources/**" location="/resources/" />
-    <mvc:resources mapping="/blog/file/temp/**"
-    			   location="file:/Users/myoungjikim/dev/kbc_std/myblog/blog/upload/temp/" />
+    <mvc:resources mapping="/blog/file/**"
+    			   location="file:/Users/myoungjikim/dev/kbc_std/myblog/blog/upload/" />
 
     <!-- 4) Controller가 반환한 view 이름을 JSP 경로로 변환 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -60,11 +60,23 @@
 	            <value>com.fasterxml.jackson.datatype.jsr310.JavaTimeModule</value>
 	        </list>
 	    </property>
-	
+
 	    <property name="featuresToDisable">
 	        <list>
 	            <util:constant static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
 	        </list>
 	    </property>
 	</bean>
+
+	<!-- 6) 쓰기 API(POST/PUT/PATCH/DELETE)에 대한 로그인/권한 검사 -->
+	<mvc:interceptors>
+	    <mvc:interceptor>
+	        <mvc:mapping path="/blog/api/post/**" />
+	        <mvc:mapping path="/blog/api/category/**" />
+	        <mvc:mapping path="/blog/api/file/**" />
+	        <bean class="kmjblog.web.interceptor.AuthInterceptor">
+	            <constructor-arg ref="objectMapper" />
+	        </bean>
+	    </mvc:interceptor>
+	</mvc:interceptors>
 </beans>

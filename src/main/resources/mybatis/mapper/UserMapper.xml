@@ -6,16 +6,22 @@
 
 <mapper namespace="kmjblog.mapper.UserMapper">
 
-    <select id="selectUserById">
-        SELECT
-            user_id AS userId,
-            email,
-            password,
-            nickname,
-            role,
-            created_at AS createdAt,
-            updated_at AS updatedAt
-        FROM users
-    </select>
+	<select id="selectUserByEmail" parameterType="java.lang.String" resultType="kmjblog.domain.User">
+		SELECT
+			user_id,
+			email,
+			password,
+			created_at,
+			updated_at
+		FROM users
+		WHERE email = #{email}
+	</select>
+
+	<select id="selectRoleCodesByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+		SELECT  r.role_code
+		FROM user_roles ur
+		JOIN roles r ON r.role_id = ur.role_id
+		WHERE ur.user_id = #{userId}
+	</select>
 
 </mapper>

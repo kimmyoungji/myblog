@@ -19,4 +19,5 @@ public interface PostMapper {
 	public List<Post> selectPostsByCategorySubtree(@Param("categoryId") Long categoryId);
 	public int updatePostSortSeq(@Param("postId") Long postId, @Param("sortSeq") int sortSeq);
 	public int deletePost(Long postId);
+	public int deletePosts(@Param("postIds") List<Long> postIds);
 }

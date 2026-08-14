@@ -1,16 +1,7 @@
 window.CategoryTree = (function () {
   // 카테고리 조회 요청. init()과 reload() 둘 다 여기서 데이터를 받아온다.
   async function fetchTreeData() {
-    const response = await fetch("/blog/api/category/jstree?haspost=true");
-
-    // 예외처리: 실패 응답
-    if (!response.ok) {
-      throw new Error(`카테고리 조회 실패: ${response.status}`);
-    }
-
-    // 응답 처리
-    const result = await response.json();
-    const treeData = result.data ?? result;
+    const treeData = await window.Api.get("/blog/api/category/jstree?haspost=true");
 
     // 예외처리: 비정상 응답 데이터(데이터 형태 검증)
     if (!Array.isArray(treeData)) {
@@ -41,47 +32,39 @@ window.CategoryTree = (function () {
 
       // 트리 그리기
       $(categoryJstree)
-        .on("ready.jstree", function () {
-          console.log("jsTree 생성 완료");
-        })
         .on("error.jstree", function (e, data) {
           console.error("jsTree 오류:", data);
         })
-        .on("changed.jstree", function (e, data) {
-          console.log("jstree node changed current node: ", data);
+        .on("changed.jstree", async function (e, data) {
+          // refresh() 중 dnd 플러그인이 내부적으로 deselect_all을 트리거할 때는
+          // data.node가 없으므로 무시한다.
+          if (!data.node) return;
+
           const isPost = data.node.type === "post";
           const id = data.node.id.replace(isPost ? "post_" : "category_", "");
           const endpoint =
             (isPost ? "/blog/api/post/" : "/blog/api/category/") + id;
 
-          console.log(
-            "선택된 노드 ID:",
-            id,
-            "타입:",
-            isPost ? "게시글" : "카테고리",
-            "API 엔드포인트:",
-            endpoint,
-          );
-
           // 만약 게시물이면 게시물 상세 페이지를 보여주고.
           if (isPost) {
             window.AppState.setPostId(id);
-            window.PostList.hide();
+			await window.PostPanel.load(id);
+			window.PostList.hide();
             window.PostPanel.show();
-            window.PostPanel.load(id);
           }
           // 만약 카테고리면 게시물 목록 페이지를 보여준다.
           else {
             window.AppState.setCategoryId(id);
-            window.PostPanel.hide();
+            // 목록 화면으로 전환하므로 이전에 보던 게시글 id는 지운다.
+            // (지우지 않으면 refresh.jstree 복원 로직이 목록 화면에서도
+            // 옛 게시글 노드를 다시 선택해 패널이 튀어나온다)
+            window.AppState.setPostId(null);
+			await window.PostList.load(id);
+			window.PostPanel.hide();
             window.PostList.show();
-            window.PostList.load(id);
           }
         })
         .on("create_node.jstree", function (e, data) {
-
-          console.log("jstree node created: ", data);
-
           const tree = $("#category-jstree").jstree(true);
           const isPost = data.node.type === "post";
           let endpoint, body;
@@ -116,19 +99,10 @@ window.CategoryTree = (function () {
             };
           }
 
-          fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          })
-            .then((res) => res.json())
-            .then((result) => {
-              if (!result.success) throw new Error(result.message);
+          window.Api.post(endpoint, body)
+            .then((newId) => {
               // 서버가 발급한 실제 id로 노드 id를 교체
-              tree.set_id(
-                data.node,
-                (isPost ? "post_" : "category_") + result.data,
-              );
+              tree.set_id(data.node, (isPost ? "post_" : "category_") + newId);
             })
             .catch((err) => {
               alert("생성 실패: " + err.message);
@@ -144,14 +118,8 @@ window.CategoryTree = (function () {
             "/rename";
           const body = isPost ? { title: data.text } : { name: data.text };
 
-          fetch(endpoint, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          })
-            .then((res) => res.json())
-            .then((result) => {
-              if (!result.success) throw new Error(result.message);
+          window.Api.patch(endpoint, body)
+            .then(() => {
               // 현재 패널에 열려있는 게시물이면 제목과 dirty-check 기준값도 함께 갱신한다.
               // (안 해두면 패널에서 저장할 때 옛 제목으로 덮어써 버리거나, 취소 시 옛 제목으로 되돌아간다)
               const panel = document.querySelector("#post-panel");
@@ -172,10 +140,8 @@ window.CategoryTree = (function () {
           const endpoint =
             (isPost ? "/blog/api/post/" : "/blog/api/category/") + id;
 
-          fetch(endpoint, { method: "DELETE" })
-            .then((res) => res.json())
-            .then((result) => {
-              if (!result.success) throw new Error(result.message);
+          window.Api.delete(endpoint)
+            .then(() => {
               // 삭제한 게시물이 현재 열려있던 게시물이라면 패널을 초기화
               const panel = document.querySelector("#post-panel");
               if (isPost && panel && panel.dataset.postId === id) {
@@ -221,15 +187,7 @@ window.CategoryTree = (function () {
             };
           }
 
-          fetch(endpoint, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          })
-            .then((res) => res.json())
-            .then((result) => {
-              if (!result.success) throw new Error(result.message);
-            })
+          window.Api.patch(endpoint, body)
             .catch((err) => {
               alert("이동 실패: " + err.message);
               // 삭제 실패 시 트리를 다시 불러와서 복구 (delete_node는 undo가 번거로움)
@@ -241,7 +199,9 @@ window.CategoryTree = (function () {
             data: treeData,
             check_callback: true, // 트리 편집 동작을 실행 여부
           },
-          plugins: ["types", "contextmenu", "dnd"],
+          // 우클릭 메뉴(생성/이름변경/삭제)와 드래그앤드롭 이동은 전부 쓰기 동작이라
+          // 관리자에게만 노출한다. 일반 방문자는 트리를 읽기 전용으로만 본다.
+          plugins: window.Auth.isAdmin() ? ["types", "contextmenu", "dnd"] : ["types"],
           types: {
             default: { icon: "jstree-icon-default" },
             category: {
@@ -315,8 +275,19 @@ window.CategoryTree = (function () {
     if (!tree) return;
 
     try {
+      // refresh 전에(=옛 트리가 살아있을 때) 현재 선택 노드를 구해둔다.
+      const previousNode = tree.get_node(getSelectedNodeId());
+
       tree.settings.core.data = await fetchTreeData();
-      tree.refresh();
+
+      // refresh()는 노드 로딩을 비동기 처리하므로 refresh.jstree 이후에 열어야
+      // 한다. open_node는 존재하지 않는 id를 넘겨도 조용히 무시하므로, 본인과
+      // 조상 id를 통째로 넘기면 새 트리에 살아있는 것까지만 자연스럽게 펼쳐진다.
+      $("#category-jstree").one("refresh.jstree", function () {
+        tree.open_node([previousNode.id, ...previousNode.parents]);
+      });
+
+      tree.refresh(false, true);
     } catch (error) {
       console.error(error);
     }
@@ -328,5 +299,12 @@ window.CategoryTree = (function () {
     return tree ? (tree.get_selected()[0] || "#") : "#";
   }
 
-  return { init, reload, getSelectedNodeId };
+  function open_node(nodeId) {
+    const tree = $("#category-jstree").jstree(true);
+    if (!tree) return;
+
+    tree.open_node(nodeId);
+  }
+
+  return { init, reload, getSelectedNodeId, open_node };
 })();

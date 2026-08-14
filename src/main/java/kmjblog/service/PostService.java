@@ -1,5 +1,6 @@
 package kmjblog.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +14,16 @@ import kmjblog.mapper.PostMapper;
 
 @Service
 public class PostService {
-	
-	PostMapper postMapper;
-	
-	public PostService (PostMapper postMapper) {
+
+	private final PostMapper postMapper;
+	private final CommFileGroupService commFileGroupService;
+	private final CommFileService commFileService;
+
+	public PostService (PostMapper postMapper, CommFileGroupService commFileGroupService,
+			CommFileService commFileService) {
 		this.postMapper = postMapper;
+		this.commFileGroupService = commFileGroupService;
+		this.commFileService = commFileService;
 	}
 	
 	/**
@@ -80,15 +86,23 @@ public class PostService {
 	 * @return
 	 */
 	public int insertPost(Post post) {
-		post.setAuthorId((long) 9999);
-
 		if(post.getSortSeq() == null) {
 			// sortSeq가 없으면, 같은 부모/카테고리의 마지막 순서로 설정
 			List<Post> siblings = postMapper.selectSiblingPosts(post.getParentPostId(), post.getCategoryId());
 			post.setSortSeq(siblings.size());
-		}	
+		}
 
-		return postMapper.insertPost(post);
+		// content 에서 이미지 url 추출
+		// 이미지 정식 경로로 이동
+		// content의 이미지 url 정식 이미지 url로 치환
+
+		int result = postMapper.insertPost(post);
+
+		// 게시물의 첨부파일을 담을 file_group을 생성 시점에 한 번만 만들어둔다.
+		// (수정할 때마다 만들면 저장할 때마다 row가 쌓이므로 여기서만 생성한다)
+		commFileGroupService.getOrCreateFileGroup(post.getPostId());
+
+		return result;
 	}
 
 	/**
@@ -97,9 +111,15 @@ public class PostService {
 	 * @param post
 	 * @return
 	 */
-	public int updatePost(Long postId, Post post) {
+	public int updatePost(Long postId, Post post) throws IOException {
 		post.setPostId(postId);
-		return postMapper.updatePost(post);
+		post.setStatus("PUBLISHED");
+		int result = postMapper.updatePost(post);
+
+		// 수정된 content에서 더 이상 참조되지 않는 첨부 이미지를 정리한다.
+		commFileService.deleteUnreferencedFiles(postId, post.getContent());
+
+		return result;
 	}
 	
 	/**
@@ -197,11 +217,41 @@ public class PostService {
 	 * @param postId
 	 * @return
 	 */
-	public int deletePost(Long postId) {
+	public int deletePost(Long postId) throws IOException {
 		List<Post> childPosts = postMapper.selectSiblingPosts(postId, null);
 		for(Post childPost : childPosts) {
 			this.deletePost(childPost.getPostId());
 		}
+		commFileService.deleteAllFilesForPost(postId);
 		return postMapper.deletePost(postId);
+	}
+
+	/**
+	 * 게시물 일괄삭제 (선택된 postId + 하위 게시물 id를 모두 모은 뒤, 한 번의 쿼리로 삭제)
+	 * @param postIds
+	 * @return
+	 */
+	public int deletePosts(List<Long> postIds) throws IOException {
+		List<Long> targetIds = new ArrayList<Long>();
+		for(Long postId : postIds) {
+			collectPostIdsWithDescendants(postId, targetIds);
+		}
+		for(Long targetId : targetIds) {
+			commFileService.deleteAllFilesForPost(targetId);
+		}
+		return postMapper.deletePosts(targetIds);
+	}
+
+	/**
+	 * postId 자신 + PARENT_POST_ID로 이어지는 모든 하위 게시물 id를 targetIds에 모은다.
+	 * @param postId
+	 * @param targetIds
+	 */
+	private void collectPostIdsWithDescendants(Long postId, List<Long> targetIds) {
+		targetIds.add(postId);
+		List<Post> childPosts = postMapper.selectSiblingPosts(postId, null);
+		for(Post childPost : childPosts) {
+			collectPostIdsWithDescendants(childPost.getPostId(), targetIds);
+		}
 	}
 }

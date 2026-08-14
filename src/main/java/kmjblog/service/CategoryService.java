@@ -1,12 +1,11 @@
 package kmjblog.service;
 
-import java.util.ArrayDeque;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Queue;
 
 import org.springframework.stereotype.Service;
 
@@ -127,7 +126,7 @@ public class CategoryService {
 	 * 카테고리 삭제 (하위 카테고리와 소속 게시물이 있으면 함께 삭제)
 	 * @return
 	 */
-	public int deleteCategory(Long categoryId) {
+	public int deleteCategory(Long categoryId) throws IOException {
 		List<Category> childCategories = categoryMapper.selectSiblingCategories(categoryId);
 		for(Category childCategory : childCategories) {
 			this.deleteCategory(childCategory.getCategoryId());

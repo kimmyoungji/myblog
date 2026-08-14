@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kmjblog.mapper.CommFileMapper">
+	<insert id="insertFile" parameterType="kmjblog.domain.CommFileVO">
+		INSERT INTO files 
+		(
+			file_id,
+			file_group_id,
+			original_file_name,
+			saved_file_name,
+			file_path,
+			file_size,
+			file_ext,
+			sort_order,
+			created_at
+		)VALUES(
+			#{fileId},
+			#{fileGroupId},
+			#{originalFileName},
+			#{savedFileName},
+			#{filePath},
+			#{fileSize},
+			#{fileExt},
+			#{sortOrder},
+			NOW()
+		)
+	</insert>
+	
+	<select id="selectFilesByFileGroupId" parameterType="java.lang.Long" resultType="kmjblog.domain.CommFileVO">
+		select * from files
+		where file_group_id = #{fileGroupId}
+	</select>
+
+	<delete id="deleteFilesByIds">
+		delete from files
+		where file_id in
+		<foreach collection="list" item="fileId" open="(" separator="," close=")">
+			#{fileId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteFileByFileGrpId" parameterType="java.lang.Long">
+		delete from files
+		where file_group_id = #{fileGroupId}
+	</delete>
+</mapper>

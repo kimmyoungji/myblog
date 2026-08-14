@@ -1,5 +1,6 @@
 package kmjblog.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -179,7 +180,7 @@ public class CategoryController {
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<ApiResponse<Integer>> deleteCategory(
 			@PathVariable Long categoryId
-	) {
+	) throws IOException {
 		// 카테고리 삭제
 		int rsltCnt = categoryService.deleteCategory(categoryId);
 		if(rsltCnt <= 0) {

@@ -55,12 +55,18 @@ pageEncoding="UTF-8"%>
 />
 <link
   rel="stylesheet"
+  href="${pageContext.request.contextPath}/resources/css/component.css"
+/>
+<link
+  rel="stylesheet"
   href="${pageContext.request.contextPath}/resources/css/blog.css"
 />
 
 <!-- CUSTOM SCRIPT: 모듈은 window.XXX = { init, ... } 형태로만 정의되며,
      실제 초기화는 blog-app.js가 순서대로 호출한다. -->
 <script src="${pageContext.request.contextPath}/resources/js/app-state.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/api.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/auth.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/post-panel.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/post-list.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/category-tree.js"></script>

@@ -46,5 +46,9 @@
 	
 	<!-- 5) mybatis mapper 구현체 생성 -->
 	<mybatis:scan base-package="kmjblog.mapper" />
+	
+	<!-- 6) bcryptPasswordEncoder -->
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	
 
 </beans>
