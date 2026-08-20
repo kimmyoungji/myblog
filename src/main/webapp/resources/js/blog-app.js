@@ -5,6 +5,7 @@
 // 쓰이므로, 로그인 상태 조회가 끝날 때까지 기다린 뒤 나머지를 초기화한다.
 document.addEventListener("DOMContentLoaded", async function () {
   await window.Auth.init();
+  window.NavDrawer.init();
   window.CategoryTree.init();
   window.PostList.init();
   window.PostPanel.init();

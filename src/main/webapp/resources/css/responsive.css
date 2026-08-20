@@ -1,0 +1,53 @@
+/* 브레이크포인트: 767px 이하를 모바일로 간주한다.
+   nav-drawer.js의 자동 닫힘 판단(window.innerWidth < 768)과 반드시 같은 값을 유지할 것. */
+@media (max-width: 767px) {
+  /* ================ header 영역 ================ */
+  .layout__header {
+    padding: 0 var(--space-4);
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ================ nav 드로어 ================ */
+  .layout__nav {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    bottom: 0;
+    width: min(80vw, var(--sidebar-width));
+    background: var(--color-bg);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 30;
+  }
+
+  .layout__nav.is-open {
+    transform: translateX(0);
+  }
+
+  .nav-backdrop.is-open {
+    display: block;
+    position: fixed;
+    inset: var(--header-height) 0 0 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 20;
+  }
+
+  /* ================ 본문(detail/list) 여백 축소 ================ */
+  .layout__detail,
+  .layout__list {
+    padding: var(--space-4);
+  }
+
+  .post-box {
+    padding: var(--space-4);
+  }
+
+  .login-card {
+    padding: var(--space-4);
+  }
+}

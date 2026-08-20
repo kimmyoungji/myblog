@@ -63,6 +63,10 @@ window.CategoryTree = (function () {
 			window.PostPanel.hide();
             window.PostList.show();
           }
+
+          // 모바일 폭에서는 nav가 드로어이므로, 항목을 고르면 본문을 볼 수 있게 닫아준다.
+          // responsive.css의 브레이크포인트(767px)와 반드시 같은 값을 유지할 것.
+          if (window.innerWidth < 768) window.NavDrawer.close();
         })
         .on("create_node.jstree", function (e, data) {
           const tree = $("#category-jstree").jstree(true);

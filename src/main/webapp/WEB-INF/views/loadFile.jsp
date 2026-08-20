@@ -61,6 +61,10 @@ pageEncoding="UTF-8"%>
   rel="stylesheet"
   href="${pageContext.request.contextPath}/resources/css/blog.css"
 />
+<link
+  rel="stylesheet"
+  href="${pageContext.request.contextPath}/resources/css/responsive.css"
+/>
 
 <!-- CUSTOM SCRIPT: 모듈은 window.XXX = { init, ... } 형태로만 정의되며,
      실제 초기화는 blog-app.js가 순서대로 호출한다. -->
@@ -70,5 +74,6 @@ pageEncoding="UTF-8"%>
 <script src="${pageContext.request.contextPath}/resources/js/post-panel.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/post-list.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/category-tree.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/nav-drawer.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/blog-app.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/post-editor.js"></script>

@@ -20,7 +20,7 @@ window.PostEditor = (function () {
     try{
       vditor = new Vditor("post-vditor", {
       mode: "ir", // wysiwyg, ir(instant rendering), sv(split view)
-      height: 320,
+      height: "100%",
       lang: "en_US",
       placeholder: "띵거가 말하지 못한 것들...",
       cache: { enable: false },
