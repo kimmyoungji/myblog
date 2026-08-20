@@ -14,3 +14,19 @@
   background: transparent;
   color: var(--color-muted);
 }
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.nav-toggle {
+  display: none;
+  border: 0;
+  background: transparent;
+  padding: var(--space-2);
+  font-size: 18px;
+  color: var(--color-text);
+  cursor: pointer;
+}

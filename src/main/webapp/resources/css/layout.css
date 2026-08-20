@@ -19,7 +19,12 @@
   overflow-y: auto;
 }
 
+.nav-backdrop {
+  display: none;
+}
+
 .layout__detail {
+  display: flex;
   flex: 1;
   padding: var(--space-8);
 }

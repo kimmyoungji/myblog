@@ -60,6 +60,10 @@ pageEncoding="UTF-8"%>
 	                DateInputUtil.getValue(dateInput);
 	        });
 	    });
+	    
+	    dateInput.addEventListener("change", function (e) {
+			console.log("change event: ", e);
+	    })
   	</script>
   </body>
   

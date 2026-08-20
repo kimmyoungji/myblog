@@ -581,11 +581,14 @@ var DateInputUtil = (function () {
                  */
                 var start =
                     input.selectionStart;
-
+				
+				console.log("input.selectionStart: ", input.selectionStart);
+					
                 var end =
                     input.selectionEnd;
 
-
+				console.log("input.selectionEnd: ", input.selectionEnd);
+					
                 /*
                  * 화면상의 selection 위치를
                  * 실제 raw 위치로 변환
@@ -668,7 +671,9 @@ var DateInputUtil = (function () {
                                 + inserted.length,
                             raw.length
                         );
-
+					console.log("cursor: ", cursor);
+					console.log("rawStart + insered.length: ", rawStart + inserted.length);
+					console.log("raw.length: ", raw.length);
 
                     /*
                      * 변경된 raw를 기준으로

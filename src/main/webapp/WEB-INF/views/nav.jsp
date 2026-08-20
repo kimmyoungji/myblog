@@ -4,6 +4,7 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="app"
 tagdir="/WEB-INF/tags" %>
 
 <!DOCTYPE html>
+<div id="nav-backdrop" class="nav-backdrop"></div>
 <aside class="layout__nav">
   <nav class="category-nav" aria-label="블로그 카테고리">
     <%--
