@@ -31,6 +31,7 @@ window.PostEditor = (function () {
         readyResolve();
       },
       upload: {
+        accept: "image/png,image/jpeg,image/gif,image/webp", // 허용할 파일 타입
 	      url: buildUploadUrl(), // 초기값. 실제 업로드 시점의 postId는 setMode(edit)에서 다시 동기화한다.
 	      max: 12 * 1024 * 1024,    // Max file size in bytes (e.g., 10MB)
 	      fieldName: 'file',        // Form field name for the file

@@ -2,3 +2,4 @@ target/*
 upload/*
 .DS_Store
 .env
+docker/mysqldb-init/*.sql

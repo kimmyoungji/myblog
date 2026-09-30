@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- 프록시(Caddy)가 넘겨준 X-Forwarded-For/Proto 헤더로 실제 클라이언트 IP와 https 여부를 복원한다.
+         기본값으로 사설 IP 대역(Docker 네트워크)에서 온 헤더만 신뢰한다. -->
+    <Valve className="org.apache.catalina.valves.RemoteIpValve"
+           remoteIpHeader="X-Forwarded-For"
+           protocolHeader="X-Forwarded-Proto" />
+</Context>

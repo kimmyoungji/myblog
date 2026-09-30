@@ -46,4 +46,14 @@
 		<servlet-name>appServlet</servlet-name>
 	    <url-pattern>/</url-pattern>
 	</servlet-mapping>
+
+	<!-- 4. 세션 쿠키 설정 -->
+	<session-config>
+		<cookie-config>
+			<!-- JavaScript(document.cookie)에서 세션 쿠키를 읽지 못하게 함 -->
+			<http-only>true</http-only>
+		</cookie-config>
+		<!-- 세션 ID는 쿠키로만 주고받는다 (URL의 ;jsessionid= 로 세션 ID를 심거나 노출하는 것을 막음) -->
+		<tracking-mode>COOKIE</tracking-mode>
+	</session-config>
 </web-app>

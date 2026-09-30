@@ -1,0 +1,50 @@
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN을 .env에 설정하세요}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+  mysqldb:
+    image: mysql:8.4
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD를 .env에 설정하세요}
+      MYSQL_DATABASE: kmjblog
+      MYSQL_USER: kmjblog_admin
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD를 .env에 설정하세요}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysqldb-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # mysqladmin ping은 인증 없이도 서버가 살아있으면 성공하므로 비밀번호를 넘기지 않는다
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"   # 변경: 외부 차단, 서버 내부에서만 접근
+    environment:
+      CATALINA_OPTS: "-Dspring.profiles.active=prod"
+      JDBC_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+        mysqldb:
+          condition: service_healthy
+    volumes:
+      - ./upload:/usr/local/tomcat/upload
+
+volumes:
+  mysql-data:
+  caddy_data:
+  caddy_config:

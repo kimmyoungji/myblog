@@ -2,22 +2,32 @@ package kmjblog.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import kmjblog.domain.ApiResponse;
 import kmjblog.domain.CommFileVO;
 
 @Service
 public class CommFileUtil {
 
 	private final Path FILE_PATH_BASE;
+
+	private static final Set<String> ALLOWED_EXTENSIONS = Set.of(".png", ".jpg", ".jpeg", ".gif", ".webp");
 
 	public CommFileUtil(@Value("${file.upload.path}") String fileRootPath) {
     	this.FILE_PATH_BASE = Path.of(fileRootPath).toAbsolutePath().normalize();
@@ -32,6 +42,8 @@ public class CommFileUtil {
 		// 1) 파일 저장 경로 준비
 		String originalFilename = file.getOriginalFilename();
 		String extension = extractExtension(originalFilename);
+		validateExtension(extension);
+		validateImageSignature(file, extension);
 		String savedFileName = UUID.randomUUID() + extension;
 		Path targetPath = FILE_PATH_BASE.resolve(String.valueOf(postId)).resolve(savedFileName).normalize();
 
@@ -118,4 +130,58 @@ public class CommFileUtil {
 
         return filename.substring(dotIndex).toLowerCase();
     }
+
+	/**
+	 * 허용된 확장자인지 검사한다.
+	 * @param extension extractExtension()으로 추출한 확장자 (예: ".png")
+	 */
+	private void validateExtension(String extension) {
+		if (!ALLOWED_EXTENSIONS.contains(extension)) {
+			throw new IllegalArgumentException("허용되지 않는 파일 형식입니다: " + extension);
+		}
+	}
+
+	/**
+	 * 파일 앞부분(매직 넘버)을 읽어 실제 내용이 확장자와 같은 이미지 형식인지 검사한다.
+	 * @param file
+	 * @param extension
+	 */
+	private void validateImageSignature(MultipartFile file, String extension) throws IOException {
+		byte[] head;
+		try (InputStream in = file.getInputStream()) {
+			head = in.readNBytes(12);
+		}
+
+		boolean valid;
+		switch (extension) {
+			case ".png":
+				valid = startsWith(head, new byte[]{(byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A});
+				break;
+			case ".jpg":
+			case ".jpeg":
+				valid = startsWith(head, new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF});
+				break;
+			case ".gif":
+				valid = startsWith(head, "GIF87a".getBytes(StandardCharsets.US_ASCII))
+					|| startsWith(head, "GIF89a".getBytes(StandardCharsets.US_ASCII));
+				break;
+			case ".webp":
+				valid = head.length >= 12
+					&& startsWith(head, "RIFF".getBytes(StandardCharsets.US_ASCII))
+					&& Arrays.equals(Arrays.copyOfRange(head, 8, 12), "WEBP".getBytes(StandardCharsets.US_ASCII));
+				break;
+			default:
+				valid = false;
+		}
+
+		if (!valid) {
+			throw new IllegalArgumentException("파일 내용이 확장자(" + extension + ")와 일치하지 않습니다.");
+		}
+	}
+
+	private boolean startsWith(byte[] data, byte[] prefix) {
+		return data.length >= prefix.length
+			&& Arrays.equals(Arrays.copyOf(data, prefix.length), prefix);
+	}
 }
+

@@ -6,14 +6,18 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import kmjblog.domain.ApiResponse;
 import kmjblog.domain.CommFileVO;
@@ -74,5 +78,15 @@ public class CommonFileController {
 	    data.put("succMap", succMap);
 
 	    return data;
+	}
+
+	/**
+	 * 업로드 검증 실패(확장자/파일 내용)를 400 응답으로 변환
+	 */
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseBody
+	public ResponseEntity<ApiResponse<Void>> handleInvalidFile(IllegalArgumentException e) {
+		ApiResponse<Void> apiResponse = new ApiResponse<Void>(false, e.getMessage(), null);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
 	}
 }

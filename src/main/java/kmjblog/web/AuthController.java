@@ -46,6 +46,8 @@ public class AuthController {
 		}
 
 		httpRequest.getSession(true).setAttribute(LoginUser.SESSION_KEY, loginUser);
+		// 세션 고정 공격 방지: 로그인 전부터 쓰던(=외부에 노출됐을 수 있는) 세션 ID를 버리고 새로 발급한다.
+		httpRequest.changeSessionId();
 
 		ApiResponse<LoginUser> apiResponse = new ApiResponse<LoginUser>(true, "로그인 성공", loginUser);
 		return ResponseEntity.ok(apiResponse);

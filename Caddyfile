@@ -1,0 +1,29 @@
+{
+	# 인증서 만료·문제 알림을 받을 이메일
+	email kmjoyit21045@gmail.com
+}
+
+{$DOMAIN} {
+	# 응답 압축
+	encode zstd gzip
+
+	# 루트(/)는 index.jsp의 "Hello World!"이므로 블로그 메인으로 보낸다
+	redir / /blog/ permanent
+
+	# 모든 요청을 Docker 네트워크 안의 app 컨테이너(Tomcat)로 전달
+	reverse_proxy app:8080
+
+	# 보안 헤더
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+# 루트 도메인(kmjoyit.xyz)도 DNS에 추가했다면 주석 해제 → www로 보냄
+# kmjoyit.xyz {
+# 	redir https://{$DOMAIN}{uri} permanent
+# }
