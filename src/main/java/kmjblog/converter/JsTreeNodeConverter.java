@@ -64,7 +64,7 @@ public class JsTreeNodeConverter {
 		
 		String parentId = post.getParentPostId() != null
 	            ? "post_" + post.getParentPostId()
-	            : "category_" + post.getCategoryId();
+	            : (post.getCategoryId() != null ? "category_" + post.getCategoryId() : "#");
 		
 		Map<String, Object> data = new HashMap<>();
 		data.put("postId", post.getPostId());

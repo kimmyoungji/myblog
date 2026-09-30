@@ -23,6 +23,14 @@ body.page-login .user-menu {
 	padding: 2rem;
 }
 
+/* 트리 노드 제목이 nav 영역 너비를 벗어나면 말줄임(...) 처리 */
+#category-jstree .jstree-anchor {
+	max-width: 90%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .category-tree {
 	margin-left: 1.2rem;	
 }
@@ -98,7 +106,7 @@ body.page-login .user-menu {
   flex: 1;
   min-height: 460px;
   margin-top: 24px;
-  padding: 32px;
+  padding: 1rem;
   border: 1px solid var(--color-border);
   border-radius: 4px;
   box-sizing: border-box;

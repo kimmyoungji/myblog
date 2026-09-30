@@ -219,16 +219,16 @@ public class CategoryService {
 	 * @param categoryTree
 	 * @return
 	 */
-	public Category findFrstCatHasPost(List<Category> categoryTree) {
-		for(Category category: categoryTree) {
-			if(!category.getPosts().isEmpty()) {
-				return category; 
-			}
-			
-			List<Category> children = category.getChildren();
-			return this.findFrstCatHasPost(children);
-		}
-		return null;
-	}
+//	public Category findFrstCatHasPost(List<Category> categoryTree) {
+//		for(Category category: categoryTree) {
+//			if(!category.getPosts().isEmpty()) {
+//				return category; 
+//			}
+//			
+//			List<Category> children = category.getChildren();
+//			return this.findFrstCatHasPost(children);
+//		}
+//		return null;
+//	}
 	
 }

@@ -74,12 +74,14 @@ public class CategoryController {
 		}
 		
 		// jsTree에 맞는 형태로 변환
+		// sort 플러그인을 쓰지 않으므로 같은 부모의 형제 노드 표시 순서는 이 배열의 순서를 따른다.
+		// 게시글을 카테고리보다 먼저 넣어 항상 위에 오도록 한다.
 		List<JsTreeNodeDto> categoryJsTreeNodes = jsTreeNodeConverter.fromCategories(categories);
 		List<JsTreeNodeDto> postJsTreeNodes = jsTreeNodeConverter.fromPosts(posts);
-		categoryJsTreeNodes.addAll(postJsTreeNodes);
-		
+		postJsTreeNodes.addAll(categoryJsTreeNodes);
+
 		// 성공 응답
-		ApiResponse<List<JsTreeNodeDto>> apiResponse = new ApiResponse<List<JsTreeNodeDto>>(true, "카테고리 조회 성공", categoryJsTreeNodes);
+		ApiResponse<List<JsTreeNodeDto>> apiResponse = new ApiResponse<List<JsTreeNodeDto>>(true, "카테고리 조회 성공", postJsTreeNodes);
 		return ResponseEntity.ok(apiResponse);
 	}
 	

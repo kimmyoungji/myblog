@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,10 +16,13 @@ import kmjblog.domain.CommFileVO;
 
 @Service
 public class CommFileUtil {
-	
-	private static final Path FILE_PATH_BASE = Path.of("/Users/myoungjikim/dev/kbc_std/myblog/blog/upload").toAbsolutePath().normalize();
-	private static final String TEMP_IMG_URL_BASE = "/blog/file/temp/";
-	
+
+	private final Path FILE_PATH_BASE;
+
+	public CommFileUtil(@Value("${file.upload.path}") String fileRootPath) {
+    	this.FILE_PATH_BASE = Path.of(fileRootPath).toAbsolutePath().normalize();
+	}
+
 	public CommFileVO saveFile(Long postId, MultipartFile file) throws IOException {
 		// 0) 파일 유무 확인 
 		if(file == null || file.isEmpty()) {
@@ -45,7 +49,8 @@ public class CommFileUtil {
 		CommFileVO commFileVo = new CommFileVO();
 		commFileVo.setOriginalFileName(originalFilename);
 		commFileVo.setSavedFileName(savedFileName);
-		commFileVo.setFilePath(targetPath.toString());
+		// commFileVo.setFilePath(targetPath.toString());
+		commFileVo.setFilePath(FILE_PATH_BASE.relativize(targetPath).toString());
 		commFileVo.setFileExt(extension);
 		commFileVo.setFileSize(file.getSize());
 		
@@ -69,7 +74,11 @@ public class CommFileUtil {
 			return;
 		}
 
-		Files.deleteIfExists(Path.of(filePath));
+		Path targetPath = FILE_PATH_BASE.resolve(filePath).normalize();
+		if(!targetPath.startsWith(FILE_PATH_BASE)) {
+			throw new IllegalArgumentException("잘못된 파일 경로입니다.");
+		}
+		Files.deleteIfExists(targetPath);
 	}
 
 	/**

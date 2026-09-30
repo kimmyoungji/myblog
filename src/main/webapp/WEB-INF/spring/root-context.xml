@@ -15,8 +15,8 @@
     <!-- 0) 트랜잭션 설정 (별도 파일: tx-context.xml) -->
     <import resource="tx-context.xml" />
 
-    <!-- 1) DB접속 정보 읽기 -->
-    <context:property-placeholder location="classpath:properties/db.properties" />
+    <!-- 1) properties 파일 읽기: 시스템 환경변수 SPRING_PROFILES_ACTIVE(local/prod) 값으로 파일 결정 -->
+    <context:property-placeholder location="classpath:properties/global-${spring.profiles.active}.properties" />
     
     <!-- 2) Service, Repository 같은 공통 Bean 스캔 -->
     <context:component-scan base-package="kmjblog">

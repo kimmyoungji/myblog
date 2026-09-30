@@ -44,12 +44,19 @@
 	    <version>1.9.7</version>
 	</dependency>
 
-	<!-- 4) MySQL JDBC Driver -->
+	<!-- 4) MySQL JDBC Driver (MariaDB로 전환하면서 잠정 비활성화 - 롤백 대비 보존) -->
 	<dependency>
 	    <groupId>com.mysql</groupId>
 	    <artifactId>mysql-connector-j</artifactId>
 	    <version>8.4.0</version>
 	</dependency>
+
+	<!-- 4-1) MariaDB JDBC Driver -->
+	<!-- <dependency>
+	    <groupId>org.mariadb.jdbc</groupId>
+	    <artifactId>mariadb-java-client</artifactId>
+	    <version>3.4.1</version>
+	</dependency> -->
 	
 	<!-- 5) MyBatis -->
 	<dependency>

@@ -25,7 +25,7 @@
     </select>
     
     <select id="selectPost" parameterType="java.lang.Long" resultType="kmjblog.domain.Post">
-    	SELECT * FROM POSTS WHERE POST_ID = #{postId} AND DEL_YN = 'N'
+    	SELECT * FROM posts WHERE post_id = #{postId} AND del_yn = 'N'
     </select>
     
     <insert id="insertPost" parameterType="kmjblog.domain.Post" useGeneratedKeys="true" keyProperty="postId">
@@ -100,7 +100,12 @@
     	   </if>
     	   <if test="parentPostId == null">
     	   AND  parent_post_id IS NULL
+    	   <if test="categoryId != null">
     	   AND  category_id    = #{categoryId}
+    	   </if>
+    	   <if test="categoryId == null">
+    	   AND  category_id IS NULL
+    	   </if>
     	   </if>
     	 ORDER  BY sort_seq ASC
     </select>

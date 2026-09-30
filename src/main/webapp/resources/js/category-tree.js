@@ -8,6 +8,12 @@ window.CategoryTree = (function () {
       throw new Error("jsTree 데이터가 배열 형식이 아닙니다.");
     }
 
+    // 말줄임(...) 처리된 제목을 마우스 호버 시 전체 텍스트로 볼 수 있도록
+    // 앵커에 네이티브 title 속성을 심어준다.
+    treeData.forEach((node) => {
+      node.a_attr = { title: node.text };
+    });
+
     return treeData;
   }
 
@@ -34,6 +40,12 @@ window.CategoryTree = (function () {
       $(categoryJstree)
         .on("error.jstree", function (e, data) {
           console.error("jsTree 오류:", data);
+        })
+        .on("ready.jstree", function () {
+          // 최초 로드 시 첫번째 루트 노드를 자동 선택한다.
+          const tree = $(categoryJstree).jstree(true);
+          const firstNodeId = tree.get_node("#").children[0];
+          if (firstNodeId) tree.select_node(firstNodeId);
         })
         .on("changed.jstree", async function (e, data) {
           // refresh() 중 dnd 플러그인이 내부적으로 deselect_all을 트리거할 때는
@@ -64,6 +76,11 @@ window.CategoryTree = (function () {
             window.PostList.show();
           }
 
+          // 하위 카테고리/게시글이 있으면 선택과 동시에 펼쳐준다.
+          if (data.node.children.length > 0) {
+            $(categoryJstree).jstree(true).open_node(data.node);
+          }
+
           // 모바일 폭에서는 nav가 드로어이므로, 항목을 고르면 본문을 볼 수 있게 닫아준다.
           // responsive.css의 브레이크포인트(767px)와 반드시 같은 값을 유지할 것.
           if (window.innerWidth < 768) window.NavDrawer.close();
@@ -73,12 +90,19 @@ window.CategoryTree = (function () {
           const isPost = data.node.type === "post";
           let endpoint, body;
 
+          // 새로 생성된 노드도 호버 시 전체 제목을 볼 수 있도록 title 속성을 심어준다.
+          tree
+            .get_node(data.node, true)
+            .find("> .jstree-anchor")
+            .attr("title", data.node.text);
+
           if (isPost) {
             const parentNode = tree.get_node(data.node.parent);
             const parentIsPost = parentNode.type === "post";
-            const categoryId = parentIsPost
-              ? parentNode.original.data.categoryId
+            let categoryId = parentIsPost
+              ? parentNode.original.data?.categoryId || "#"
               : parentNode.id.replace("category_", "");
+			categoryId = categoryId == "#" ? null : categoryId;
             const parentPostId = parentIsPost
               ? parentNode.id.replace("post_", "")
               : null;
@@ -122,6 +146,13 @@ window.CategoryTree = (function () {
             "/rename";
           const body = isPost ? { title: data.text } : { name: data.text };
 
+          // 변경된 제목을 호버 툴팁에도 즉시 반영한다.
+          $("#category-jstree")
+            .jstree(true)
+            .get_node(data.node, true)
+            .find("> .jstree-anchor")
+            .attr("title", data.text);
+
           window.Api.patch(endpoint, body)
             .then(() => {
               // 현재 패널에 열려있는 게시물이면 제목과 dirty-check 기준값도 함께 갱신한다.
@@ -133,6 +164,11 @@ window.CategoryTree = (function () {
             })
             .catch((err) => {
               alert("이름 변경 실패: " + err.message);
+              $("#category-jstree")
+                .jstree(true)
+                .get_node(data.node, true)
+                .find("> .jstree-anchor")
+                .attr("title", data.old); // 실패 시 툴팁도 이전 제목으로 복구
               $("#category-jstree")
                 .jstree(true)
                 .set_text(data.node, data.old); // 실패 시 이전 이름으로 복구
@@ -167,9 +203,10 @@ window.CategoryTree = (function () {
           if (isPost) {
             const parentNode = tree.get_node(data.node.parent);
             const parentIsPost = parentNode.type === "post";
-            const categoryId = parentIsPost
-              ? parentNode.original.data.categoryId
+            let categoryId = parentIsPost
+              ? parentNode.original.data?.categoryId || "#"
               : parentNode.id.replace("category_", "");
+			categoryId =  categoryId == "#" ? null : categoryId;
             const parentPostId = parentIsPost
               ? parentNode.id.replace("post_", "")
               : null;
@@ -237,6 +274,9 @@ window.CategoryTree = (function () {
                 createChildPost: {
                   label: "하위 게시글 추가",
                   action: function () {
+					
+					console.log("node");
+					console.log(node);
                     const newNode = tree.create_node(node, {
                       text: "새 게시글",
                       type: "post",

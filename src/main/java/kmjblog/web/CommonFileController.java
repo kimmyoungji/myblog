@@ -47,7 +47,7 @@ public class CommonFileController {
 		Path url = base.resolve(String.valueOf(postId)).resolve(commFileVo.getSavedFileName());
 		String originalFilename = commFileVo.getOriginalFileName();
 		
-		// 5) 파일 정보와 url 을 포함하여 vditor에 맞는 응답 정보 구성		
+		// 파일 정보와 url 을 포함하여 vditor에 맞는 응답 정보 구성		
 		Map<String, Object> vditorResData = this.createVditorUploadResData(originalFilename, url.toString());
 		
 		// 응답 반환

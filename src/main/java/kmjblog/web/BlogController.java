@@ -45,15 +45,15 @@ public class BlogController {
 		List<Category> categoryTreeWithPosts = categoryService.buildCategoryTreeWithPosts();
 		
 		// 게시글이 있는 최상단 카테고리 아이디 가져오기
-		Category frstCatHasPost = categoryService.findFrstCatHasPost(categoryTreeWithPosts);
+		// Category frstCatHasPost = categoryService.findFrstCatHasPost(categoryTreeWithPosts);
 		
 		// 게시물 단건 조회
-		Long frstPostId = frstCatHasPost.getPosts().get(0).getPostId();
-		Post frstPost   = postService.selectPost(frstPostId);
+		// Long frstPostId = frstCatHasPost.getPosts().get(0).getPostId();
+		// Post frstPost   = postService.selectPost(frstPostId);
 		
 		// modelMap 구성
 		modelMap.addAttribute("categoryTreeWithPosts", categoryTreeWithPosts);
-		modelMap.addAttribute("frstPost", frstPost);
+		//modelMap.addAttribute("frstPost", frstPost);
 		
 		return "blog";
 	}

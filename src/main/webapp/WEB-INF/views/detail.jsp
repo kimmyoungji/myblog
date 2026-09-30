@@ -4,17 +4,17 @@
 <!DOCTYPE html>
 <section class="layout__detail">
 	<div id="post-panel" class="post-panel"
-		 data-mode="${empty frstPost ? 'initial' : 'view'}"
-		 data-post-id="<c:out value='${frstPost.postId}'/>">
+		 data-mode="view"
+		 data-post-id="">
 
 		<p class="post-empty">왼쪽 트리에서 게시글을 선택해주세요.</p>
 
 		<div class="post-meta">
-			<input id="post-title" class="post-title" value="<c:out value='${frstPost.title}'/>" disabled/>
+			<input id="post-title" class="post-title" value="" disabled/>
 			<p class="post-meta-line">
-				작성자: <span id="post-authorId"><c:out value='${frstPost.authorId}'/></span>
-				/ 최종작성일: <span id="post-updatedAt"><c:out value='${frstPost.updatedAt}'/></span>
-				/ 조회수: <span id="post-viewCount"><c:out value='${frstPost.viewCount}'/></span>
+				작성자: <span id="post-authorId"></span>
+				/ 최종작성일: <span id="post-updatedAt"></span>
+				/ 조회수: <span id="post-viewCount"></span>
 			</p>
 		</div>
 
@@ -22,7 +22,7 @@
 			<!-- Vditor의 실제 데이터 저장소. 화면에는 표시하지 않고 post-editor.js가 값을 읽고 쓰는 용도로만 쓴다. -->
 			<textarea id="post-content"
 					  class="is-hidden"
-					  disabled><c:out value='${frstPost.content}'/></textarea>
+					  disabled></textarea>
 			<!-- Vditor가 생성될 영역 -->
     		<div id="post-vditor"></div>
 			<!-- 조회 모드에서 마크다운을 렌더링해서 보여주는 영역 -->

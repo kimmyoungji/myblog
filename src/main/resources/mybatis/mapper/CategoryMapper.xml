@@ -7,35 +7,35 @@
 <mapper namespace="kmjblog.mapper.CategoryMapper">
 
     <select id="selectCategoryList" resultType="kmjblog.domain.Category" >
-        SELECT   CATEGORY_ID 		/* 카테고리아이디 */
-        		,PARENT_CATEGORY_ID /* 부모 카테고리아이디 */
-        		,NAME 				/* 카테고리명 */
-        		,SORT_SEQ			/* 정렬순서 */
-        		,CREATED_AT 		/* 생성일 */
-        		,UPDATED_AT	 		/* 수정일 */
-          FROM  CATEGORIES 			/* 카테고리 테이블 */
-         ORDER  BY PARENT_CATEGORY_ID ASC, SORT_SEQ ASC
+        SELECT   category_id 		/* 카테고리아이디 */
+        		,parent_category_id /* 부모 카테고리아이디 */
+        		,name 				/* 카테고리명 */
+        		,sort_seq			/* 정렬순서 */
+        		,created_at 		/* 생성일 */
+        		,updated_at	 		/* 수정일 */
+          FROM  categories 			/* 카테고리 테이블 */
+         ORDER  BY parent_category_id ASC, sort_seq ASC
     </select>
 
     <select id="selectCategory" parameterType="java.lang.Long" resultType="kmjblog.domain.Category">
-        SELECT   CATEGORY_ID
-        		,PARENT_CATEGORY_ID
-        		,NAME
-        		,SORT_SEQ
-        		,CREATED_AT
-        		,UPDATED_AT
-          FROM  CATEGORIES
-         WHERE  CATEGORY_ID = #{categoryId}
+        SELECT   category_id
+        		,parent_category_id
+        		,name
+        		,sort_seq
+        		,created_at
+        		,updated_at
+          FROM  categories
+         WHERE  category_id = #{categoryId}
     </select>
 
     <insert id="insertCategory" parameterType="kmjblog.domain.Category" useGeneratedKeys="true" keyProperty="categoryId">
-    	INSERT INTO CATEGORIES
+    	INSERT INTO categories
         (	
-        	 PARENT_CATEGORY_ID /* 부모 카테고리아이디 */
-        	,NAME 				/* 카테고리명 */
-        	,SORT_SEQ			/* 정렬순서 */
-        	,CREATED_AT 		/* 생성일 */
-        	,UPDATED_AT	 		/* 수정일 */
+        	 parent_category_id /* 부모 카테고리아이디 */
+        	,name 				/* 카테고리명 */
+        	,sort_seq			/* 정렬순서 */
+        	,created_at 		/* 생성일 */
+        	,updated_at	 		/* 수정일 */
     	)VALUES 
     	(
     		#{parentCategoryId},
@@ -47,52 +47,51 @@
     </insert>
     
     <update id="updateCategory" parameterType="kmjblog.domain.Category">
-    	UPDATE  CATEGORIES 
-    	   SET  PARENT_CATEGORY_ID = #{parentCategoryId}  	/* 부모 카테고리아이디 */
-        		,NAME			   = #{name}				/* 카테고리명 */
-        		,SORT_SEQ        = #{sortSeq}				/* 정렬순서 */
-        		,UPDATED_AT		   = NOW()	 				/* 수정일 */
-         WHERE  CATEGORY_ID        = #{categoryId} 			/* 카테고리아이디 */
+    	UPDATE  categories 
+    	   SET  parent_category_id = #{parentCategoryId}  	/* 부모 카테고리아이디 */
+        		,name			   = #{name}				/* 카테고리명 */
+        		,sort_seq        = #{sortSeq}				/* 정렬순서 */
+        		,updated_at		   = NOW()	 				/* 수정일 */
+         WHERE  category_id        = #{categoryId} 			/* 카테고리아이디 */
     </update>
     
     <update id="renameCategory" parameterType="kmjblog.domain.Category">
-    	UPDATE  CATEGORIES 
-    	   SET   NAME			   = #{name}				/* 카테고리명 */
-        		,UPDATED_AT		   = NOW()	 				/* 수정일 */
-         WHERE  CATEGORY_ID        = #{categoryId} 			/* 카테고리아이디 */
+    	UPDATE  categories 
+    	   SET   name			   = #{name}				/* 카테고리명 */
+        		,updated_at		   = NOW()	 				/* 수정일 */
+         WHERE  category_id        = #{categoryId} 			/* 카테고리아이디 */
     </update>
     
     <update id="relocateCategory" parameterType="kmjblog.domain.Category">
-    	UPDATE  CATEGORIES
-    	   SET   PARENT_CATEGORY_ID = #{parentCategoryId} /* 카테고리명 */
-    	   		,SORT_SEQ			= #{sortSeq}		  /* 정렬순서 */
-        		,UPDATED_AT		    = NOW()	 			  /* 수정일 */
-         WHERE  CATEGORY_ID         = #{categoryId} 	  /* 카테고리아이디 */
+    	UPDATE  categories
+    	   SET   parent_category_id = #{parentCategoryId} /* 카테고리명 */
+    	   		,sort_seq			= #{sortSeq}		  /* 정렬순서 */
+        		,updated_at		    = NOW()	 			  /* 수정일 */
+         WHERE  category_id         = #{categoryId} 	  /* 카테고리아이디 */
     </update>
 
     <!-- 카테고리 이동 시 재정렬 대상이 되는 형제 카테고리 조회 -->
     <select id="selectSiblingCategories" resultType="kmjblog.domain.Category">
-    	SELECT  CATEGORY_ID
-    			,SORT_SEQ
-    	  FROM  CATEGORIES
+    	SELECT  category_id
+    			,sort_seq
+    	  FROM  categories
     	<where>
-    		<if test="parentCategoryId != null">PARENT_CATEGORY_ID = #{parentCategoryId}</if>
-    		<if test="parentCategoryId == null">PARENT_CATEGORY_ID IS NULL</if>
+    		<if test="parentCategoryId != null">parent_category_id = #{parentCategoryId}</if>
+    		<if test="parentCategoryId == null">parent_category_id IS NULL</if>
     	</where>
-    	 ORDER  BY SORT_SEQ ASC
+    	 ORDER  BY sort_seq ASC
     </select>
 
     <update id="updateCategorySortSeq">
-    	UPDATE  CATEGORIES
-    	   SET  SORT_SEQ    = #{sortSeq}
-    	 WHERE  CATEGORY_ID = #{categoryId}
+    	UPDATE  categories
+    	   SET  sort_seq    = #{sortSeq}
+    	 WHERE  category_id = #{categoryId}
     </update>
 
     <delete id="deleteCategory" parameterType="java.lang.Long">
     	DELETE 
-    	  FROM  CATEGORIES
-    	 WHERE  CATEGORY_ID = #{categoryId}
+    	  FROM  categories
+    	 WHERE  category_id = #{categoryId}
     </delete>
 
 </mapper>
-
