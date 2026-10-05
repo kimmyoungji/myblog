@@ -100,7 +100,7 @@ $CATALINA_HOME/bin/shutdown.sh
 
 ---
 
-### 로컬 이미지 데이터를 AWS Lightsali 에 업로드하기
+## 로컬 이미지 데이터를 AWS Lightsali 에 업로드하기
 
 먼저 아래 두가지를 전제한다.
 - 네트워크 환경이 22번 포트를 통해 데이터를 외부로 전송할 수 있다.
@@ -121,7 +121,7 @@ rsync -avz --exclude 'temp/' --exclude '.DS_Store' upload/ kmjblog:~/myblog/uplo
 
 ---
 
-### AWS의 백업 파일을 로컬에 다운로드 해서 적용하기
+## AWS의 백업 파일을 로컬에 다운로드 해서 적용하기
 ```bash
 cd (프로젝트 루트 경로)
 scp -i ~/(.ssh에 위치한 lightsali 연결용 pem 경로) \ 
