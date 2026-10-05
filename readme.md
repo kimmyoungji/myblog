@@ -128,4 +128,6 @@ scp -i ~/(.ssh에 위치한 lightsali 연결용 pem 경로) \
   -r \
   ubuntu@52.79.229.201:/home/ubuntu/myblog/backups/(백업하고자하는 폴더명) \
   (프로젝트 루트 경로)/backups/
+
+./script/restore-local.sh
 ```
