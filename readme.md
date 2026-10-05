@@ -2,6 +2,8 @@
 
 본 프로젝트는 springframework4.3 / JSP / Mybatis / MySQL DB 를 사용하여 구현한 포트폴리오 전시용 게시판 프로젝트입니다.
 
+배포 URL: [https://www.kmjoyit.xyz](https://www.kmjoyit.xyz)
+
 ---
 
 ## 로컬 빌트 및 톰캣 실행 방법
