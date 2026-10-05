@@ -14,7 +14,7 @@ rm -rf "$CATALINA_HOME/webapps/ROOT" "$CATALINA_HOME/webapps/ROOT.war"
 cp target/kmjblog-0.0.1-SNAPSHOT.war "$CATALINA_HOME/webapps/ROOT.war"
 
 # 루트 .env의 MYSQL_PASSWORD를 JDBC_PASSWORD로 사용
-set -a; source ../.env; set +a
+set -a; source ./.env; set +a
 export JDBC_PASSWORD="$MYSQL_PASSWORD"
 
 CATALINA_OPTS="-Dspring.profiles.active=local" JPDA_ADDRESS=localhost:8000 \
