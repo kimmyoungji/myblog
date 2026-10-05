@@ -61,6 +61,31 @@ docker compose logs app | grep -nE "SEVERE|Caused by|Exception:" | tail -20
 
 ```
 
+## 백업 / 복원
+DB(mysqldump)와 `upload/` 폴더를 함께 백업하고, 결과는 `backups/` 아래에 저장된다. (`backups/`는 git 제외)
+
+| 스크립트 | 환경 | 설명 |
+|---|---|---|
+| `scripts/backup-prod.sh` | Lightsail | app 중지 → 백업 → 검증 → app 재시작. `backups/<날짜_시간>/` |
+| `scripts/restore-prod.sh` | Lightsail | app 중지 → DB/upload 복원 → app 재시작 |
+| `scripts/backup-local.sh` | 로컬 | Homebrew MySQL + `upload/` 백업. `backups/local_<날짜_시간>/` |
+| `scripts/restore-local.sh` | 로컬 | 복원 전 현재 상태를 자동 백업한 뒤 복원. Tomcat을 먼저 종료해야 함 |
+
+```zsh
+#로컬 백업 (DB 비밀번호는 .env의 MYSQL_PASSWORD, 다르면 LOCAL_DB_PASSWORD로 지정)
+./scripts/backup-local.sh
+
+#로컬 복원 (Tomcat 종료 후)
+$CATALINA_HOME/bin/shutdown.sh
+./scripts/restore-local.sh backups/<폴더>/database_<시간>.sql.gz backups/<폴더>/upload_<시간>.tar.gz
+
+#운영 백업 / 복원 (Lightsail, /home/ubuntu/myblog에서)
+./scripts/backup-prod.sh
+./scripts/restore-prod.sh backups/<시간>/database_<시간>.sql.gz backups/<시간>/upload_<시간>.tar.gz
+```
+- 복원하면 덤프에 있는 테이블은 백업 시점으로 덮어써진다 (`DROP TABLE IF EXISTS` 포함). 덤프에 없는 테이블은 남는다.
+- 로컬 `~/.mylogin.cnf`에 root 접속 정보가 있어 `MYSQL_PWD`가 무시되므로, 로컬 스크립트는 `-p`로 비밀번호를 넘긴다. (`Using a password...` 경고는 무시해도 됨)
+
 ### 로컬 이미지 데이터를 AWS Lightsali 에 업로드하기
 
 먼저 아래 두가지를 전제한다.
