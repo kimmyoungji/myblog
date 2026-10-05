@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.." # scripts/의 상위 = 프로젝트 루트 (pom.xml, target/, .env 기준)
 
 # CATALINA_HOME이 비어 있으면 rm -rf/cp가 /webapps 같은 엉뚱한 경로를 대상으로 하므로 즉시 중단
 if [[ -z "$CATALINA_HOME" || ! -x "$CATALINA_HOME/bin/catalina.sh" ]]; then

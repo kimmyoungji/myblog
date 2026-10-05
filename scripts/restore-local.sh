@@ -78,4 +78,4 @@ rm -rf "$HOME_DIR/upload"
 tar -xzf "$UPLOAD_BACKUP" \
   -C "$HOME_DIR"
 
-echo "Restore completed. ./run-local.sh로 앱을 다시 실행하세요."
+echo "Restore completed. ./scripts/run-local.sh로 앱을 다시 실행하세요."
