@@ -61,25 +61,21 @@ docker compose logs app | grep -nE "SEVERE|Caused by|Exception:" | tail -20
 
 ```
 
-## TODO
-### 보안 보완점
-[] 비밀번호 바꾸기
-[v] 업로드 파일 확장자 확인 로직 추가 - CommFileUtil
-    [v] 허용할 확장자 목록 정하기
-    [v] 저장하기 전에 확장자 검사하기
-    [v] 파일 내용이 진짜 이미지인지 확인하기
-    [v] 실패 응답을 400으로 처리하기
-    [v] 확인하기
-[] HTTPS 설정 추가
+### 로컬 이미지 데이터를 AWS Lightsali 에 업로드하기
 
-### caddy를 사용하여 HTTPS 통신 구현하기
-[v] 도메인 준비하기
-[] Lightsali 네트워크 설정 변경. TCP/UDP 443 HTTPS 통신을 모든 IP에 대해 허용하기
-[v] DNS 연결 - A 레코드 추가 Lightsali 고정IP로 등록
-[v] 반영되었는지 확인 ```dig +short example.com```
-[v] caddyfile 작성
-[v] docker-compose.yml 수정
-[v] tomcat이 "HTTPS"로 들어온 요청임을 알게 하기
-[] Lightsali에 배포하기
-[] 확인
+먼저 아래 두가지를 전제한다.
+- 네트워크 환경이 22번 포트를 통해 데이터를 외부로 전송할 수 있다.
+- kmjblog 라는 라벨의 호스트가 ~/.ssh/Config에 등록되어 있다.
+- .ssh/Config 내용 예시
+  ```bash
+    Host kmjblog
+    HostName ***.***.***.***
+    User ubuntu
+    IdentityFile ~/(.pem 파일 경로)
+    IdentitiesOnly yes
+  ```
 
+그 다음 아래 명령어를 프로젝트 루트(.../blog/*)에서 실행한다.
+```
+rsync -avz --exclude 'temp/' --exclude '.DS_Store' upload/ kmjblog:~/myblog/upload
+```
