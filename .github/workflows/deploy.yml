@@ -72,7 +72,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: SSH 연결
+      - name: SSH 설정
         run: |
           mkdir -p ~/.ssh
         
@@ -81,9 +81,14 @@ jobs:
 
           ssh-keyscan -H ${{secrets.LIGHTSAIL_HOST}} >> ~/.ssh/known_hosts
 
-      - name: SSH 연결 테스트
+      - name: LightSail 배포
         run: |
           ssh \
             -i ~/.ssh/id_ed25519 \
             "${{secrets.LIGHTSAIL_USER}}@${{secrets.LIGHTSAIL_HOST}}" \
-            echo "SSH 연결 성공"
+            '
+              set -e
+              cd /home/ubuntu/myblog
+              docker compose pull app
+              docker compose up -d app
+            '
