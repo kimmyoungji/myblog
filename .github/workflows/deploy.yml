@@ -84,11 +84,11 @@ jobs:
       - name: LightSail 배포
         run: |
           ssh \
-            -i ~/.ssh/id_ed25519 \
-            "${{secrets.LIGHTSAIL_USER}}@${{secrets.LIGHTSAIL_HOST}}" \
-            '
-              set -e
-              cd /home/ubuntu/myblog
-              docker compose pull app
-              docker compose up -d app
-            '
+          -i ~/.ssh/id_ed25519 \
+          "${{secrets.LIGHTSAIL_USER}}@${{secrets.LIGHTSAIL_HOST}}" \
+          '
+            set -e
+            cd /home/ubuntu/myblog
+            docker compose pull app
+            docker compose up -d app
+          '
