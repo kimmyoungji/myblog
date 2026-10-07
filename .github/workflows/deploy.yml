@@ -71,3 +71,19 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{github.repository}}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: SSH 연결
+        run: |
+          mkdir -p ~/.ssh
+        
+          echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh-keyscan -H ${{secrets.LIGHTSAIL_HOST}} >> ~/.ssh/known_hosts
+
+      - name: SSH 연결 테스트
+        run: |
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            "${{secrets.LIGHTSAIL_USER}}@${{secrets.LIGHTSAIL_HOST}}" \
+            echo "SSH 연결 성공"
