@@ -92,3 +92,8 @@ jobs:
             docker compose pull app
             docker compose up -d app
           '
+      
+      - name: 배포 확인
+        run: |
+          sleep 10
+          curl --fail --silent --show-error https://www.kmjoyit.xyz > /dev/null
