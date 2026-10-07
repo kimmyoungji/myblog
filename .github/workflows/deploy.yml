@@ -95,5 +95,13 @@ jobs:
       
       - name: 배포 확인
         run: |
-          sleep 10
-          curl --fail --silent --show-error https://www.kmjoyit.xyz > /dev/null
+          for i in $(seq 1 30); do
+            if curl -fsS -o /dev/null --max-time 10 https://www.kmjoyit.xyz/blog/; then
+              echo "배포 확인 성공 (${i}번째 시도)"
+              exit 0
+            fi
+            echo "아직 준비 안 됨... (${i}/30)"
+            sleep 5
+          done
+          echo "배포 확인 실패"
+          exit 1
