@@ -31,7 +31,9 @@ services:
       timeout: 5s
       retries: 10
   app:
-    build: .
+    # GitHub Actions가 GHCR에 올린 이미지를 실행한다 (build 방식 → image 방식)
+    # 배포 스크립트(scripts/deploy-prod.sh)가 .env의 APP_IMAGE를 커밋 SHA 태그로 바꿔 가며 교체한다
+    image: ${APP_IMAGE:-ghcr.io/kimmyoungji/kmjblog:latest}
     restart: unless-stopped
     ports:
       - "127.0.0.1:8080:8080"   # 변경: 외부 차단, 서버 내부에서만 접근

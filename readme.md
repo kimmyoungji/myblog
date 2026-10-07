@@ -133,3 +133,39 @@ scp -i ~/(.ssh에 위치한 lightsali 연결용 pem 경로) \
 
 ./script/restore-local.sh
 ```
+
+---
+
+## 자동 배포 구현하기
+1. 배포 정책 정하기
+git push -> test -> Docker image build -> GHCR upload
+-> Lightsali SSH 접속 -> 새 이미지 pull -> app container 교체 -> 서비스 정상 확인
+2. docker-compose.yml의 app을 build 방식에서 image 방식으로 변경한다.
+3. GitHub Container Registry에 이미지를 올린다.
+4. GitHub Actions에서 Docker 이미지를 빌드하는 Workflow를 만든다.
+5. Lightsali이 GHCR 이미지를 실행할 수 있게 준비한다. 
+6. GitHub Actions가 Lightsali에 ssh로 접속할 수 있게 하낟.
+7. GitHub Actions에 실제 배포 단계를 추가한다.
+8. 배포 성공 여부를 자동 검증한다.
+9. 배포 실패 시 rollback을 추가한다.
+10. 현재 만들어둔 백업 자동화와 배포 자동화를 연결하되, 역할은 분리한다.
+
+---
+
+## GHCR(Git Hub Container Repository)에 이미지 업로드하기
+```bash 
+# 1. 이미지 빌드 및 컴퓨터 아키텍쳐 확인 -> lightsali가 amd64아키이므로 linux/amd64에 맞게 빌드
+docker buildx build --platform linux/amd64 -t ghcr.io/kimmyoungji/kmjblog:latest .
+# 1-2. 이미지 아키텍쳐 확인
+docker image inspect ghcr.io/kimmyoungji/kmjblog:latest --format '{{.Os}}/{{.Architecture}}'
+
+# 2. CR_PAT 발급
+# Git Hub -> Settings -> Developer Settings -> Personal Access Token -> Tokens(classic) -> generate token with write:package auth scope
+# export CR_PAT=(pat token)
+
+# 3. GHCR 로그인
+echo $CR_PAT | docker login ghcr.io -u myname --password-stdin
+
+# 4. 업로드
+docker docker push ghcr.io/kimmyoungji/kmjblog:latest
+```
