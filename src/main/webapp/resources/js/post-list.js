@@ -22,11 +22,13 @@ window.PostList = (function () {
           width: 40,
         },
         { title: "ID", field: "postId", visible: false },
-        { title: "제목", field: "title" },
-        { title: "작성자", field: "authorId" },
+        // 체크박스를 뺀 나머지 폭을 보이는 칸의 widthGrow 비율(제목 6 : 작성일 3)로 나눠 가진다.
+        // minWidth 아래로는 줄지 않고, 그보다 좁아지면 가로 스크롤이 생긴다.
+        { title: "제목", field: "title", widthGrow: 6, minWidth: 120 },
+        { title: "작성자", field: "authorId", widthGrow: 1, minWidth: 60, visible: false },
         { title: "순번", field: "sortSeq", visible: false },
-        { title: "조회수", field: "viewCount" },
-        { title: "최종작성일", field: "updatedAt" },
+        { title: "조회수", field: "viewCount", widthGrow: 1, minWidth: 60, hozAlign: "right", visible: false },
+        { title: "최종작성일", field: "updatedAt", widthGrow: 3, minWidth: 150 },
       ]
     });
 

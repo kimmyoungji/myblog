@@ -55,6 +55,7 @@ body.page-login .user-menu {
   flex-direction: column;
   flex: 1;
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 }
 
@@ -104,6 +105,7 @@ body.page-login .user-menu {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
   min-height: 460px;
   margin-top: 24px;
   padding: 1rem;
@@ -124,6 +126,12 @@ body.page-login .user-menu {
   border: 1px solid var(--color-border);
   border-radius: 4px;
   overflow: auto;
+}
+
+/* 본문 이미지가 미리보기 영역 너비를 넘지 않도록 비율 유지하며 축소 */
+#post-preview img {
+  max-width: 100%;
+  height: auto;
 }
 
 .post-toolbar {

@@ -127,7 +127,8 @@
 				p.category_id,
 				p.sort_seq,
 				p.author_id,
-				p.title
+				p.title,
+				p.updated_at
 		FROM parent_categories pc 
 		LEFT OUTER JOIN posts p 
 		ON pc.category_id  = p.category_id 
