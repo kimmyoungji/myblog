@@ -4,9 +4,22 @@
 // Auth는 CategoryTree가 관리자 여부(컨텍스트 메뉴/드래그앤드롭 노출)를 판단하는 데
 // 쓰이므로, 로그인 상태 조회가 끝날 때까지 기다린 뒤 나머지를 초기화한다.
 document.addEventListener("DOMContentLoaded", async function () {
+  initStateFromServer();
   await window.Auth.init();
   window.NavDrawer.init();
   window.CategoryTree.init();
   window.PostList.init();
   window.PostPanel.init();
 });
+
+// <main data-selected-category="3" data-selected-post=""> 의 값을 읽어 AppState에 저장한다.
+function initStateFromServer() {
+  const root = document.querySelector("main.layout");
+  if (!root) return;
+
+  const { selectedCategory, selectedPost } = root.dataset;
+  console.log("[init] 서버 초기값:", { selectedCategory, selectedPost });
+
+  if (selectedCategory) window.AppState.setCategoryId(selectedCategory);
+  if (selectedPost) window.AppState.setPostId(selectedPost);
+}

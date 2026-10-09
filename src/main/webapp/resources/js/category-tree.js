@@ -17,6 +17,21 @@ window.CategoryTree = (function () {
     return treeData;
   }
 
+  // 최초 로드 시 선택할 노드 id를 고른다.
+  // 서버가 넘겨준 초기값(AppState) 중 게시글 > 카테고리 > 첫 번째 루트 노드 순으로,
+  // 트리에 실제로 존재하는 첫 번째 노드를 반환한다.
+  function getInitialNodeId(tree) {
+    const postId = window.AppState.getPostId();
+    const categoryId = window.AppState.getCategoryId();
+
+    const candidates = [];
+    if (postId) candidates.push("post_" + postId);
+    if (categoryId) candidates.push("category_" + categoryId);
+    candidates.push(tree.get_node("#").children[0]);
+
+    return candidates.find((id) => id && tree.get_node(id));
+  }
+
   async function init() {
     const categoryJstree = document.querySelector("#category-jstree");
 
@@ -42,10 +57,14 @@ window.CategoryTree = (function () {
           console.error("jsTree 오류:", data);
         })
         .on("ready.jstree", function () {
-          // 최초 로드 시 첫번째 루트 노드를 자동 선택한다.
+          // 서버가 지정한 노드(없으면 첫 번째 루트 노드)를 자동 선택한다.
           const tree = $(categoryJstree).jstree(true);
-          const firstNodeId = tree.get_node("#").children[0];
-          if (firstNodeId) tree.select_node(firstNodeId);
+          const initialNodeId = getInitialNodeId(tree);
+          if (!initialNodeId) return;
+
+          tree.select_node(initialNodeId);
+          // 깊이 있는 노드도 보이도록 상위 노드들을 펼친다.
+          tree.open_node(tree.get_node(initialNodeId).parents);
         })
         .on("changed.jstree", async function (e, data) {
           // refresh() 중 dnd 플러그인이 내부적으로 deselect_all을 트리거할 때는

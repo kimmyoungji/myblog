@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import kmjblog.domain.Category;
@@ -26,7 +27,7 @@ public class BlogController {
 	 * @param categoryService
 	 * @param postService
 	 */
-	private BlogController(
+	public BlogController(
 			CategoryService categoryService, 
 			PostService postService) {
 		this.categoryService = categoryService;
@@ -44,17 +45,69 @@ public class BlogController {
 		// 게시글을 포함한 카테고리 트리 조회
 		List<Category> categoryTreeWithPosts = categoryService.buildCategoryTreeWithPosts();
 		
-		// 게시글이 있는 최상단 카테고리 아이디 가져오기
-		// Category frstCatHasPost = categoryService.findFrstCatHasPost(categoryTreeWithPosts);
-		
-		// 게시물 단건 조회
-		// Long frstPostId = frstCatHasPost.getPosts().get(0).getPostId();
-		// Post frstPost   = postService.selectPost(frstPostId);
-		
 		// modelMap 구성
 		modelMap.addAttribute("categoryTreeWithPosts", categoryTreeWithPosts);
 		//modelMap.addAttribute("frstPost", frstPost);
 		
 		return "blog";
 	}
+
+	/**
+	 * 블로그 post-list 화면
+	 * @param modelMap
+	 * @return
+	 */
+	@GetMapping("/category/{categoryId}")
+	public String getPostListPage(@PathVariable("categoryId") Long categoryId, Model modelMap) {
+		
+		// 게시글을 포함한 카테고리 트리 조회
+		List<Category> categoryTreeWithPosts = categoryService.buildCategoryTreeWithPosts();
+		
+		// modelMap 구성
+		modelMap.addAttribute("categoryTreeWithPosts", categoryTreeWithPosts);
+		modelMap.addAttribute("selectedCategory", categoryId);
+		
+		return "blog";
+	}
+
+	/**
+	 * 블로그 post-list 화면
+	 * @param modelMap
+	 * @return
+	 */
+	@GetMapping("/post/{postId}")
+	public String getPostDetailPage(@PathVariable("postId") Long postId, Model modelMap) {
+		
+		// 게시글을 포함한 카테고리 트리 조회
+		List<Category> categoryTreeWithPosts = categoryService.buildCategoryTreeWithPosts();
+		
+		// modelMap 구성
+		modelMap.addAttribute("categoryTreeWithPosts", categoryTreeWithPosts);
+		modelMap.addAttribute("selectedPost", postId);
+		
+		return "blog";
+	}
+
+	/**
+	 * 블로그 post-detail 화면
+	 * @param modelMap
+	 * @return
+	 */
+	@GetMapping("/{categoryId}/{postId}")
+	public String getPostPage(
+		@PathVariable("categoryId") Long categoryId,
+		@PathVariable("postId") Long postId, 
+		Model modelMap) {
+		
+		// 게시글을 포함한 카테고리 트리 조회
+		List<Category> categoryTreeWithPosts = categoryService.buildCategoryTreeWithPosts();
+		
+		// modelMap 구성
+		modelMap.addAttribute("categoryTreeWithPosts", categoryTreeWithPosts);
+		modelMap.addAttribute("selectedCategory", categoryId);
+		modelMap.addAttribute("selectedPost", postId);
+		
+		return "blog";
+	}
+
 }
